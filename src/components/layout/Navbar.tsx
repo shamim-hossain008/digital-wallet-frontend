@@ -1,3 +1,4 @@
+import { role } from "@/constants/role";
 import { Link } from "react-router-dom";
 import Logo from "../../assets/icons/Logo";
 import { Button } from "../ui/button";
@@ -8,14 +9,18 @@ import {
   NavigationMenuList,
 } from "../ui/navigation-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { ModeToggle } from "./ModeToggler";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/features", label: "features" },
-  { href: "/contact", label: "Contact" },
-  { href: "/faq", label: "FAQ" },
+  { href: "/", label: "Home", role: "PUBLIC" },
+  { href: "/about", label: "About", role: "PUBLIC" },
+  { href: "/features", label: "features", role: "PUBLIC" },
+  { href: "/contact", label: "Contact", role: "PUBLIC" },
+  { href: "/faq", label: "FAQ", role: "PUBLIC" },
+  { href: "/agent", label: "Dashboard", role: role.agent },
+  { href: "admin", label: "Dashboard", role: role.admin },
+  { href: "user", label: "Dashboard", role: role.user },
 ];
 
 export default function Navbar() {
@@ -85,6 +90,7 @@ export default function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
+          <ModeToggle />
           <Button asChild className="text-sm">
             <Link to="/login">Login</Link>
           </Button>
