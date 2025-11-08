@@ -1,16 +1,12 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "./components/layout/Navbar";
+import CommonLayout from "./components/layout/CommonLayout";
 
 function App() {
-  return (
-    <div>
-      {/* Navbar */}
-      <Navbar/>
-      <Outlet />
-      {/* Footer */}
-    </div>
-  );
+  return <>
+    <CommonLayout>
+      <Outlet/>
+    </CommonLayout>
+  </>;
 }
 
 export default App;
-
