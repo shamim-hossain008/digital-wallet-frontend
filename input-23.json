@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.adrianub.dev/schema/registry-item.json",
+  "name": "input-23",
+  "type": "registry:component",
+  "dependencies": [
+    "lucide-angular"
+  ],
+  "registryDependencies": [
+    "https://www.originui-ng.com/r/input.json",
+    "https://www.originui-ng.com/r/label.json"
+  ],
+  "files": [
+    {
+      "path": "registry/default/components/inputs/input-23.ts",
+      "content": "import { Component } from '@angular/core';\nimport { OriInput } from '~/registry/default/ui/input';\nimport { OriLabel } from '~/registry/default/ui/label';\nimport { Eye, EyeOff, LucideAngularModule } from 'lucide-angular';\n\n@Component({\n    selector: 'demo-input-23',\n    imports: [OriInput, OriLabel, LucideAngularModule],\n    template: `\n        <div class=\"space-y-2\">\n            <label oriLabel htmlFor=\"input-23\">Show/hide password input</label>\n            <div class=\"relative\">\n                <input\n                    class=\"pe-9\"\n                    id=\"input-23\"\n                    [type]=\"isVisible ? 'text' : 'password'\"\n                    oriInput\n                    placeholder=\"Password\"\n                />\n                <button\n                    class=\"text-muted-foreground/80 hover:text-foreground focus-visible:outline-ring/70 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg outline-offset-2 transition-colors focus:z-10 focus-visible:outline focus-visible:outline-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50\"\n                    [attr.aria-pressed]=\"isVisible\"\n                    [attr.aria-label]=\"isVisible ? 'Hide password' : 'Show password'\"\n                    (click)=\"toggleVisibility()\"\n                    type=\"button\"\n                    aria-controls=\"password\"\n                >\n                    <lucide-angular\n                        [img]=\"isVisible ? EyeOffIcon : EyeIcon\"\n                        size=\"16\"\n                        strokeWidth=\"2\"\n                        aria-hidden=\"true\"\n                    />\n                </button>\n            </div>\n        </div>\n    `\n})\nexport default class Input23Component {\n    readonly EyeIcon = Eye;\n    readonly EyeOffIcon = EyeOff;\n\n    isVisible = false;\n\n    toggleVisibility() {\n        this.isVisible = !this.isVisible;\n    }\n}\n",
+      "type": "registry:component"
+    }
+  ],
+  "meta": {
+    "tags": [
+      "input"
+    ]
+  }
+}

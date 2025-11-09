@@ -10,6 +10,8 @@ import Home from "../pages/public/Home";
 import { adminSidebarItems } from "./adminSidebarItems";
 import { agentSidebarItems } from "./agentSidebarItems";
 import { userSidebarItems } from "./userSidebarItems";
+import Login from "@/pages/auth/Login";
+import Register from "@/pages/auth/Register";
 
 export const router = createBrowserRouter([
   {
@@ -65,5 +67,14 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="/user/dashboard" /> },
       ...generateRoutes(userSidebarItems),
     ],
+  },
+
+  {
+    Component: Login,
+    path: "/login",
+  },
+  {
+    Component: Register,
+    path: "/register",
   },
 ]);
