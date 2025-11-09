@@ -1,6 +1,13 @@
 import type { ComponentType } from "react";
 
-export type { ILogin, ISendOtp, IVerifyOtp } from "./auth.type";
+export type {
+  ILoginRequest,
+  ILoginResponse,
+  IRegisterRequest,
+  IRegisterResponse,
+  ISendOtp,
+  IVerifyOtp,
+} from "./auth.type";
 
 export interface ISidebarItem {
   title: string;
@@ -12,4 +19,3 @@ export interface ISidebarItem {
 }
 
 export type TRole = "ADMIN" | "AGENT" | "USER";
-

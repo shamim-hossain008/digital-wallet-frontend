@@ -6,14 +6,36 @@ export interface IVerifyOtp {
   otp: string;
 }
 
-export interface ILogin {
+export interface ILoginRequest {
   email: string;
   password: string;
 }
 
-export interface IRegister {
+export interface ILoginResponse {
+  accessToken: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
+
+
+
+
+export interface IRegisterRequest {
   name: string;
   email: string;
   password: string;
-  phone: string;
+  confirmPassword: string;
+}
+
+export interface IRegisterResponse {
+  message: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
 }
