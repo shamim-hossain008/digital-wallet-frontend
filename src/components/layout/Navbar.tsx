@@ -1,4 +1,5 @@
 import { role } from "@/constants/role";
+import { useLogoutMutation } from "@/redux/features/auth/auth.api";
 import { Link } from "react-router-dom";
 import Logo from "../../assets/icons/Logo";
 import { Button } from "../ui/button";
@@ -24,7 +25,12 @@ const navigationLinks = [
 ];
 
 export default function Navbar() {
+  const [logout] = useLogoutMutation();
   // console.log(data?.data?.email);
+
+  const handleLogout = async () => {
+    console.log(logout);
+  };
 
   return (
     <header className="border-b  sticky top-0 z-50">
@@ -54,6 +60,7 @@ export default function Navbar() {
                 </svg>
               </Button>
             </PopoverTrigger>
+
             <PopoverContent align="start" className="w-36 p-1 md:hidden">
               <NavigationMenu className="max-w-none *:w-full">
                 <NavigationMenuList className="flex-col items-start gap-0">
@@ -87,14 +94,29 @@ export default function Navbar() {
             </NavigationMenu>
           </div>
         </div>
+        <ModeToggle />
 
         {/* Right side */}
-        <div className="flex items-center gap-2">
-          <ModeToggle />
-          <Button asChild className="text-sm">
-            <Link to="/login">Login</Link>
-          </Button>
-        </div>
+        {/* <div className="flex items-center gap-2">
+
+          {data?.data?.email && (
+            <Button
+              onClick={handleLogout}
+              variant={"outline"}
+              className="text-sm"
+            >
+              Logout
+            </Button>
+          )}
+          {!data?.data?.email && (
+            <Button asChild className="text-sm">
+              <Link to="login">Login</Link>
+            </Button>
+          )}
+        </div> */}
+        <Button asChild className="text-sm">
+          <Link to="login">Login</Link>
+        </Button>
       </div>
     </header>
   );

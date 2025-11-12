@@ -20,15 +20,10 @@ export interface ILoginResponse {
   };
 }
 
-
-
-
-
 export interface IRegisterRequest {
   name: string;
   email: string;
   password: string;
-  confirmPassword: string;
 }
 
 export interface IRegisterResponse {
@@ -38,4 +33,10 @@ export interface IRegisterResponse {
     name: string;
     email: string;
   };
+}
+
+export interface IUser {
+  id: string;
+  name: string;
+  email: string;
 }

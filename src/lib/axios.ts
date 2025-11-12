@@ -18,6 +18,7 @@ axiosInstance.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
 let isRefreshing = false;
 
 let pendingQueue: {
@@ -42,13 +43,21 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
+    if (!error.response) {
+      console.error("Network error:", error);
+      return Promise.reject({
+        status: "NETWORK_ERROR",
+        data: "Network error. Server may be down.",
+      });
+    }
+
     const originalRequest = error.config as AxiosRequestConfig & {
       _retry: boolean;
     };
 
     if (
       error.response.status === 500 &&
-      error.response.data.message === "jwt expired" &&
+      error.response.data?.message === "jwt expired" &&
       !originalRequest._retry
     ) {
       console.log("Your token has been expired");
@@ -67,7 +76,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         const res = await axiosInstance.post("auth/refresh-token");
-        console.log("New token arrived", res);
+        console.log("New token arrived", res.data);
         processQueue(null);
 
         return axiosInstance(originalRequest);
@@ -78,6 +87,7 @@ axiosInstance.interceptors.response.use(
         isRefreshing = false;
       }
     }
+    // reject all other errors normally
     return Promise.reject(error);
   }
 );

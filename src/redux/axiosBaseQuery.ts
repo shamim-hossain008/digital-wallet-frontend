@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { axiosInstance } from "@/lib/axios";
 import type { BaseQueryFn } from "@reduxjs/toolkit/query";
 import type { AxiosError, AxiosRequestConfig } from "axios";
@@ -12,7 +13,7 @@ const axiosBaseQuery =
       headers?: AxiosRequestConfig["headers"];
     },
     unknown,
-    unknown
+    { status?: number | string; data?: any }
   > =>
   async ({ url, method, data, params, headers }) => {
     try {
@@ -26,11 +27,15 @@ const axiosBaseQuery =
       return { data: result.data };
     } catch (axiosError) {
       const err = axiosError as AxiosError;
+
+      const status = err.response?.status ?? "NETWORK_ERROR";
+      const data =
+        err.response?.data ??
+        err.message ??
+        "Something went wrong with the request";
+
       return {
-        error: {
-          status: err.response?.status,
-          data: err.response?.data || err.message,
-        },
+        error: { status, data },
       };
     }
   };

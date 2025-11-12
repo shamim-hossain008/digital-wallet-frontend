@@ -7,6 +7,7 @@ export type {
   IRegisterResponse,
   ISendOtp,
   IVerifyOtp,
+  IUser
 } from "./auth.type";
 
 export interface ISidebarItem {

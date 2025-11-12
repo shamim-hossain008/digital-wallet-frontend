@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Password from "@/components/ui/Password";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,32 +13,46 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Link } from "react-router";
+import { useRegisterMutation } from "@/redux/features/auth/auth.api";
+import { useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { toast } from "sonner";
+
+const registerSchema = z
+  .object({
+    name: z
+      .string()
+      .min(3, {
+        error: "Name is too short",
+      })
+      .max(50),
+    email: z.email(),
+    password: z
+      .string()
+      .min(8, { error: "Password must be at least 8 characters long" })
+      .regex(
+        /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
+        "Password must contain at least 1 special character."
+      ),
+    confirmPassword: z
+      .string()
+      .min(8, { error: "Confirm password is too short" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
 export function RegisterForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  const registerSchema = z
-    .object({
-      name: z
-        .string()
-        .min(3, {
-          error: "Name is too short",
-        })
-        .max(50),
-      email: z.email(),
-      password: z.string().min(8, { error: "Password is too short" }),
-      confirmPassword: z
-        .string()
-        .min(8, { error: "Confirm password is too short" }),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-      message: "Passwords don't match",
-      path: ["confirmPassword"],
-    });
+  const [register] = useRegisterMutation();
+  const navigate = useNavigate();
+  const [password, setPassword] = useState("");
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -48,8 +63,74 @@ export function RegisterForm({
       confirmPassword: "",
     },
   });
-  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log(data);
+
+  // ✅ Password Strength Checker
+  const checkStrength = (pass: string) => {
+    const requirements = [
+      { regex: /.{8,}/, text: "At least 8 characters" },
+      { regex: /[0-9]/, text: "At least 1 number" },
+      { regex: /[a-z]/, text: "At least 1 lowercase letter" },
+      { regex: /[A-Z]/, text: "At least 1 uppercase letter" },
+      { regex: /[!@#$%^&*(),.?":{}|<>]/, text: "At least 1 special character" },
+    ];
+    return requirements.map((req) => ({
+      met: req.regex.test(pass),
+      text: req.text,
+    }));
+  };
+
+  const strength = checkStrength(password);
+  const strengthScore = useMemo(() => {
+    return strength.filter((req) => req.met).length;
+  }, [strength]);
+
+  const getStrengthColor = (score: number) => {
+    if (score === 0) return "bg-border";
+    if (score <= 2) return "bg-red-500";
+    if (score === 3) return "bg-amber-500";
+    if (score === 4) return "bg-green-500";
+    return "bg-emerald-500";
+  };
+
+  const getStrengthText = (score: number) => {
+    if (score === 0) return "Enter a password";
+    if (score <= 2) return "Weak password";
+    if (score === 3) return "Medium password";
+    return "Strong password";
+  };
+
+  const onSubmit = async (data: z.infer<typeof registerSchema>) => {
+    const userInfo = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    };
+
+    try {
+      const result = await register(userInfo).unwrap();
+      console.log("result:", result);
+      toast.success("User created successfully");
+      navigate("/");
+    } catch (error) {
+      console.log("Register Error", error);
+      const err = error as { status?: number | string; data?: any };
+
+      if (err.data?.errors) {
+        Object.entries(err.data.errors).forEach(([field, message]) => {
+          form.setError(field as keyof typeof data, {
+            type: "server",
+            message: message as string,
+          });
+        });
+      } else {
+        const message =
+          typeof err.data === "string"
+            ? err.data
+            : err.data?.message ?? "Registration failed. Please try again.";
+
+        toast.error(message);
+      }
+    }
   };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -105,8 +186,39 @@ export function RegisterForm({
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Password {...field} />
+                    <Password
+                      {...field}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        field.onChange(e);
+                        setPassword(e.target.value);
+                      }}
+                    />
                   </FormControl>
+                  {/* Password Strength Bar */}
+                  <div className="mt-2 h-2 w-full rounded bg-border">
+                    <div
+                      className={`h-2 rounded ${getStrengthColor(
+                        strengthScore
+                      )}`}
+                      style={{
+                        width: `${(strengthScore / 5) * 100}%`,
+                        transition: "width 0.3s ease",
+                      }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {getStrengthText(strengthScore)}
+                  </p>
+                  <ul className="mt-2 space-y-1 text-xs">
+                    {strength.map((req, i) => (
+                      <li
+                        key={i}
+                        className={req.met ? "text-green-500" : "text-red-500"}
+                      >
+                        {req.text}
+                      </li>
+                    ))}
+                  </ul>
                   <FormDescription className="sr-only">
                     This is your public display name.
                   </FormDescription>
