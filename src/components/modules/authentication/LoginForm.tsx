@@ -9,20 +9,74 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import config from "@/config";
-
 import { cn } from "@/lib/utils";
-import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
-import { Link } from "react-router";
+import { useLoginMutation } from "@/redux/features/auth/auth.api";
+import { setAuth } from "@/redux/features/auth/auth.slice";
+import type { ILoginRequest } from "@/types";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const form = useForm();
+  const [login, { isLoading }] = useLoginMutation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log(data);
+  const form = useForm<ILoginRequest>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit: SubmitHandler<ILoginRequest> = async (data) => {
+    try {
+      const res = await login(data).unwrap();
+
+      const wrapperData = res.data;
+
+      if (res.success && wrapperData) {
+        // Dispatch auth slice
+        dispatch(
+          setAuth({
+            accessToken: wrapperData.accessToken,
+            refreshToken: wrapperData.refreshToken,
+            user: wrapperData.user,
+          })
+        );
+        // Persist minimal auth for axios interceptor or page reloads
+        localStorage.setItem(
+          "dw_auth",
+          JSON.stringify({
+            accessToken: wrapperData.accessToken,
+            refreshToken: wrapperData.refreshToken ?? null,
+            user: { ...wrapperData.user, password: undefined },
+          })
+        );
+        toast.success("user login successfully");
+        // console.log(store.getState().auth);
+        navigate("/");
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.log("Login error", error);
+
+      if (error.data?.message === "Password does not match") {
+        toast.error("Invalid credentials");
+      }
+      const errorMessage =
+        error?.data?.message || // backend message
+        (typeof error === "string" ? error : undefined) || // plain string error
+        "Login failed. Please try again.";
+
+      toast.error(errorMessage);
+    }
   };
 
   return (
@@ -81,18 +135,16 @@ export function LoginForm({
               )}
             />
 
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? <Spinner className="w-4 h-4" /> : "Login"}
             </Button>
           </form>
         </Form>
-
         <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
           <span className="relative z-10 bg-background px-2 text-muted-foreground">
             Or continue with
           </span>
         </div>
-
         <Button
           onClick={() => window.open(`${config.baseUrl}/auth/google`)}
           type="button"

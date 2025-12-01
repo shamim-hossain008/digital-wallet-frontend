@@ -1,15 +1,27 @@
-import { role } from "@/constants/role";
-import { useLogoutMutation } from "@/redux/features/auth/auth.api";
-import { Link } from "react-router-dom";
-import Logo from "../../assets/icons/Logo";
-import { Button } from "../ui/button";
+/* eslint-disable no-empty */
+import Logo from "@/assets/icons/Logo";
+import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-} from "../ui/navigation-menu";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+} from "@/components/ui/navigation-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { role } from "@/constants/role";
+import {
+  authApi,
+  useLogoutMutation,
+  useUserInfoQuery,
+} from "@/redux/features/auth/auth.api";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+
+import { clearAuth } from "@/redux/features/auth/auth.slice";
+import { Link, useNavigate } from "react-router-dom";
 import { ModeToggle } from "./ModeToggler";
 
 // Navigation links array to be used in both desktop and mobile menus
@@ -20,20 +32,56 @@ const navigationLinks = [
   { href: "/contact", label: "Contact", role: "PUBLIC" },
   { href: "/faq", label: "FAQ", role: "PUBLIC" },
   { href: "/agent", label: "Dashboard", role: role.agent },
-  { href: "admin", label: "Dashboard", role: role.admin },
-  { href: "user", label: "Dashboard", role: role.user },
+  { href: "/admin", label: "Dashboard", role: role.admin },
+  { href: "/user", label: "Dashboard", role: role.user },
 ];
 
 export default function Navbar() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const { accessToken, user } = useAppSelector((state) => state.auth);
+
+  const isLoggedIn = !!accessToken;
+  const userRole = user?.role;
+
+  useUserInfoQuery(undefined, { skip: !accessToken });
+
   const [logout] = useLogoutMutation();
-  // console.log(data?.data?.email);
 
   const handleLogout = async () => {
-    console.log(logout);
+    try {
+      await logout().unwrap();
+    } catch (err) {
+      console.log(err);
+    }
+
+    try {
+      localStorage.removeItem("dw_auth");
+    } catch {}
+
+    dispatch(clearAuth());
+    dispatch(authApi.util.resetApiState());
+    navigate("/");
   };
+  // render a single element per link and use href as key
+  const renderLinks = () =>
+    navigationLinks.map((link) => {
+      const showPublic = link.role === "PUBLIC";
+      const showForRole = !!userRole && link.role === userRole;
+      if (!showPublic && !showForRole) return null;
+
+      return (
+        <NavigationMenuItem key={link.href} className="w-full">
+          <NavigationMenuLink asChild className="py-1.5">
+            <Link to={link.href}>{link.label}</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+      );
+    });
 
   return (
-    <header className="border-b  sticky top-0 z-50">
+    <header className="border-b">
       <div className="flex container mx-auto px-4 h-16 items-center justify-between gap-4">
         {/* Left side */}
         <div className="flex items-center gap-2">
@@ -51,55 +99,41 @@ export default function Navbar() {
                   height={16}
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
                 >
-                  <path d="M4 6h16M4 12h16M4 18h16" />
+                  <path d="M4 7H20" stroke="currentColor" strokeWidth="2" />
+                  <path d="M4 12H20" stroke="currentColor" strokeWidth="2" />
+                  <path d="M4 17H20" stroke="currentColor" strokeWidth="2" />
                 </svg>
               </Button>
             </PopoverTrigger>
-
-            <PopoverContent align="start" className="w-36 p-1 md:hidden">
+            <PopoverContent align="start" className="w-44 p-1 md:hidden">
               <NavigationMenu className="max-w-none *:w-full">
-                <NavigationMenuList className="flex-col items-start gap-0">
-                  {navigationLinks.map((link, index) => (
-                    <NavigationMenuItem key={index} className="w-full">
-                      <NavigationMenuLink asChild className="py-1.5">
-                        <Link to={link.href}>{link.label}</Link>
-                      </NavigationMenuLink>
-                    </NavigationMenuItem>
-                  ))}
+                <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
+                  {renderLinks()}
                 </NavigationMenuList>
               </NavigationMenu>
             </PopoverContent>
           </Popover>
 
-          {/* Logo + Desktop nav */}
+          {/* Main nav */}
           <div className="flex items-center gap-6">
             <Link to="/" className="text-primary hover:text-primary/90">
               <Logo />
             </Link>
             <NavigationMenu className="max-md:hidden">
               <NavigationMenuList className="gap-2">
-                {navigationLinks.map((link, index) => (
-                  <NavigationMenuItem key={index}>
-                    <NavigationMenuLink asChild className="py-1.5">
-                      <Link to={link.href}>{link.label}</Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ))}
+                {renderLinks()}
               </NavigationMenuList>
             </NavigationMenu>
           </div>
         </div>
-        <ModeToggle />
 
         {/* Right side */}
-        {/* <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          <ModeToggle />
 
-          {data?.data?.email && (
+          {/* show Logout when email present, otherwise show Login */}
+          {isLoggedIn ? (
             <Button
               onClick={handleLogout}
               variant={"outline"}
@@ -107,16 +141,12 @@ export default function Navbar() {
             >
               Logout
             </Button>
-          )}
-          {!data?.data?.email && (
+          ) : (
             <Button asChild className="text-sm">
-              <Link to="login">Login</Link>
+              <Link to="/login">Login</Link>
             </Button>
           )}
-        </div> */}
-        <Button asChild className="text-sm">
-          <Link to="login">Login</Link>
-        </Button>
+        </div>
       </div>
     </header>
   );

@@ -4,9 +4,11 @@ import type {
   ILoginResponse,
   IRegisterRequest,
   IRegisterResponse,
+  IResponse,
+  IUserInfoData,
 } from "@/types";
 
-const authApi = baseApi.injectEndpoints({
+export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // register user
     register: builder.mutation<IRegisterResponse, IRegisterRequest>({
@@ -19,31 +21,41 @@ const authApi = baseApi.injectEndpoints({
     }),
     // login user
     login: builder.mutation<ILoginResponse, ILoginRequest>({
-      query: (userinfo) => ({
+      query: (userInfo) => ({
         url: "/auth/login",
         method: "POST",
-        data: userinfo,
+        data: userInfo,
       }),
       invalidatesTags: ["Auth"],
     }),
+
     // Logout user
-    logout: builder.mutation<{ message: string }, void>({
+
+    logout: builder.mutation<
+      IResponse<{ message: string }>,
+      { refreshToken?: string } | void
+    >({
       query: () => ({
         url: "/auth/logout",
         method: "POST",
       }),
       invalidatesTags: ["Auth"],
     }),
-    // get me
-    // userInfo:builder.query<IUser,void>({
-    //     query:()=>({
-    //         url:"/user/me",
-    //         method:"GET"
-    //     }),
-    //     providesTags:["User"]
-    // })
+
+    // get current user info
+    userInfo: builder.query<IResponse<IUserInfoData>, void>({
+      query: () => ({
+        url: "/user/me",
+        method: "GET",
+      }),
+      providesTags: ["User"],
+    }),
   }),
 });
 
-export const { useRegisterMutation, useLoginMutation, useLogoutMutation } =
-  authApi;
+export const {
+  useRegisterMutation,
+  useLoginMutation,
+  useLogoutMutation,
+  useUserInfoQuery,
+} = authApi;

@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Password from "@/components/ui/Password";
 import { Button } from "@/components/ui/button";
@@ -25,21 +26,22 @@ const registerSchema = z
   .object({
     name: z
       .string()
-      .min(3, {
-        error: "Name is too short",
-      })
-      .max(50),
-    email: z.email(),
+      .min(2, { message: "Name too short. Minimum 2 characters long." })
+      .max(50, { message: "Name too long." }),
+    email: z.string().email("Invalid email address!!"),
     password: z
       .string()
-      .min(8, { error: "Password must be at least 8 characters long" })
-      .regex(
-        /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
-        "Password must contain at least 1 special character."
-      ),
-    confirmPassword: z
-      .string()
-      .min(8, { error: "Confirm password is too short" }),
+      .min(8, { message: "Password must be at least 8 characters long." })
+      .regex(/^(?=.*[A-Z])/, {
+        message: "Password must contain at least 1 uppercase letter.",
+      })
+      .regex(/^(?=.*\d)/, {
+        message: "Password must contain at least 1 digit.",
+      })
+      .regex(/^(?=.*[!@#$%^&*(),.?\":{}|<>])/, {
+        message: "Password must contain at least 1 special character.",
+      }),
+    confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -50,7 +52,7 @@ export function RegisterForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  const [register] = useRegisterMutation();
+  const [register, { isLoading }] = useRegisterMutation();
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
 
@@ -126,7 +128,10 @@ export function RegisterForm({
         const message =
           typeof err.data === "string"
             ? err.data
-            : err.data?.message ?? "Registration failed. Please try again.";
+            : err.data?.message ??
+              (err.status === "NETWORK_ERROR"
+                ? "Network error. Please check your connection."
+                : "Registration failed. Please try again.");
 
         toast.error(message);
       }
@@ -188,6 +193,8 @@ export function RegisterForm({
                   <FormControl>
                     <Password
                       {...field}
+                      name={field.name}
+                      autoComplete="new-password"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         field.onChange(e);
                         setPassword(e.target.value);
@@ -234,7 +241,11 @@ export function RegisterForm({
                 <FormItem>
                   <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
-                    <Password {...field} />
+                    <Password
+                      {...field}
+                      name={field.name}
+                      autoComplete="new-password"
+                    />
                   </FormControl>
                   <FormDescription className="sr-only">
                     This is your public display name.
@@ -244,8 +255,8 @@ export function RegisterForm({
               )}
             />
 
-            <Button type="submit" className="w-full">
-              Submit
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Submitting..." : "Submit"}
             </Button>
           </form>
         </Form>
