@@ -13,14 +13,18 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { Link } from "react-router-dom";
-
-
-
+import { getSidebarItems } from "@/utils/getSidebarItems";
+import { role } from "@/constants/role";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const {data:userData} = useUserInfoQuery(undefined);
 
-  
+  const data = {
+    navMain:getSidebarItems(userData?.data?.role ?? role?.user)
+  } 
+ 
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -37,7 +41,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <SidebarMenu>
                 {item.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={item.isActive}>
+                    <SidebarMenuButton asChild >
                       <Link to={item.url}>{item.title}</Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

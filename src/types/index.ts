@@ -1,3 +1,4 @@
+import type { role } from "@/constants/role";
 import type { ComponentType } from "react";
 import type { ILoginData, IUserInfoData } from "./auth.type";
 
@@ -38,3 +39,5 @@ export interface ISidebarItem {
     component: ComponentType;
   }[];
 }
+
+export type TRole = (typeof role)[keyof typeof role];

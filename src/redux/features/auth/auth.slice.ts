@@ -32,7 +32,7 @@ const authSlice = createSlice({
     setAuth(
       state,
       action: PayloadAction<{
-        accessToken: string;
+        accessToken: string | null;
         refreshToken?: string | null;
         user: any;
       }>
