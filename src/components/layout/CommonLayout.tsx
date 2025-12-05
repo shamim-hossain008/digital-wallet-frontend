@@ -2,6 +2,8 @@ import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { clearAuth, setAuth } from "@/redux/features/auth/auth.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { useEffect, type ReactNode } from "react";
+import { GlobalSkeleton } from "../loading/GlobalSkeleton";
+import { NavbarSkeleton } from "../loading/NavbarSkeleton";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 
@@ -14,9 +16,12 @@ function CommonLayout({ children }: IProps) {
   const auth = useAppSelector((state) => state.auth);
   const { accessToken } = auth;
 
-  const { data, refetch, isError } = useUserInfoQuery(undefined, {
-    skip: !accessToken,
-  });
+  const { data, isLoading, isFetching, refetch, isError } = useUserInfoQuery(
+    undefined,
+    {
+      skip: !accessToken,
+    }
+  );
 
   // on app load: load auth from localStorage and refetch user info
   useEffect(() => {
@@ -70,8 +75,21 @@ function CommonLayout({ children }: IProps) {
     }
   }, [data, auth, dispatch]);
 
+  if ((isLoading || isFetching) && accessToken) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        {/*  */}
+        <NavbarSkeleton />
+        <div className="grow">
+          <GlobalSkeleton />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col ">
       <Navbar />
       <div className="grow">{children}</div>
       <Footer />

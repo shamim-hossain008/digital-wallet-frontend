@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { AuthSkeleton } from "@/components/loading/AuthSkeleton";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,8 +18,8 @@ import { useLoginMutation } from "@/redux/features/auth/auth.api";
 import { setAuth } from "@/redux/features/auth/auth.slice";
 import type { ILoginRequest } from "@/types";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 
 export function LoginForm({
@@ -27,6 +29,10 @@ export function LoginForm({
   const [login, { isLoading }] = useLoginMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchParas] = useSearchParams();
+
+  const redirectTo = searchParas.get("redirectTo");
+  const { user } = useSelector((state: any) => state.auth.user);
 
   const form = useForm<ILoginRequest>({
     defaultValues: {
@@ -34,6 +40,24 @@ export function LoginForm({
       password: "",
     },
   });
+
+  //
+  const handleRoleRedirect = (role: string) => {
+    if (redirectTo) {
+      return navigate(redirectTo, { replace: true });
+    }
+    switch (role) {
+      case "ADMIN":
+        navigate("/admin/dashboard");
+        break;
+      case "AGENT":
+        navigate("/agent/dashboard");
+        break;
+      default:
+        navigate("/user/dashboard");
+        break;
+    }
+  };
 
   const onSubmit: SubmitHandler<ILoginRequest> = async (data) => {
     try {
@@ -46,7 +70,7 @@ export function LoginForm({
         dispatch(
           setAuth({
             accessToken: wrapperData.accessToken,
-            refreshToken: wrapperData.refreshToken,
+            refreshToken: wrapperData.refreshToken ?? null,
             user: wrapperData.user,
           })
         );
@@ -61,9 +85,8 @@ export function LoginForm({
         );
         toast.success("user login successfully");
         // console.log(store.getState().auth);
-        navigate("/");
+        handleRoleRedirect(wrapperData.user.role);
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.log("Login error", error);
 
@@ -78,6 +101,10 @@ export function LoginForm({
       toast.error(errorMessage);
     }
   };
+
+  if (user === undefined && isLoading) {
+    return <AuthSkeleton />;
+  }
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
