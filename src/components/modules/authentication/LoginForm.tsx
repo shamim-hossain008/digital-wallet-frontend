@@ -18,7 +18,7 @@ import { useLoginMutation } from "@/redux/features/auth/auth.api";
 import { setAuth } from "@/redux/features/auth/auth.slice";
 import type { ILoginRequest } from "@/types";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 
@@ -32,7 +32,6 @@ export function LoginForm({
   const [searchParas] = useSearchParams();
 
   const redirectTo = searchParas.get("redirectTo");
-  const { user } = useSelector((state: any) => state.auth.user);
 
   const form = useForm<ILoginRequest>({
     defaultValues: {
@@ -46,17 +45,13 @@ export function LoginForm({
     if (redirectTo) {
       return navigate(redirectTo, { replace: true });
     }
-    switch (role) {
-      case "ADMIN":
-        navigate("/admin/dashboard");
-        break;
-      case "AGENT":
-        navigate("/agent/dashboard");
-        break;
-      default:
-        navigate("/user/dashboard");
-        break;
-    }
+    const roleRoutes: Record<string, string> = {
+      ADMIN: "/admin/dashboard",
+      AGENT: "/agent/dashboard",
+      USER: "/user/dashboard",
+    };
+
+    navigate(roleRoutes[role] || "/user/dashboard");
   };
 
   const onSubmit: SubmitHandler<ILoginRequest> = async (data) => {
@@ -102,10 +97,9 @@ export function LoginForm({
     }
   };
 
-  if (user === undefined && isLoading) {
+  if (isLoading) {
     return <AuthSkeleton />;
   }
-
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">

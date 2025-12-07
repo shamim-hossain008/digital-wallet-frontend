@@ -13,8 +13,7 @@ interface IProps {
 
 function CommonLayout({ children }: IProps) {
   const dispatch = useAppDispatch();
-  const auth = useAppSelector((state) => state.auth);
-  const { accessToken } = auth;
+  const { accessToken } = useAppSelector((state) => state.auth);
 
   const { data, isLoading, isFetching, refetch, isError } = useUserInfoQuery(
     undefined,
@@ -23,7 +22,7 @@ function CommonLayout({ children }: IProps) {
     }
   );
 
-  // on app load: load auth from localStorage and refetch user info
+  // on app load
   useEffect(() => {
     const storedAuth = localStorage.getItem("dw_auth");
     if (storedAuth) {
@@ -32,16 +31,14 @@ function CommonLayout({ children }: IProps) {
     }
   }, [dispatch]);
 
-  // Start query only when accessToken exists
-
+  // Fetch user info when token change
   useEffect(() => {
     if (accessToken) {
       refetch();
     }
   }, [accessToken, refetch]);
 
-  // handle case where token is invalid/expired
-
+  // Token invalid or expired
   useEffect(() => {
     if (isError) {
       dispatch(clearAuth());
@@ -55,7 +52,7 @@ function CommonLayout({ children }: IProps) {
       // Update Redux
       dispatch(
         setAuth({
-          ...auth,
+          accessToken,
           user: data.data,
         })
       );
@@ -73,7 +70,7 @@ function CommonLayout({ children }: IProps) {
         );
       }
     }
-  }, [data, auth, dispatch]);
+  }, [data, accessToken, dispatch]);
 
   if ((isLoading || isFetching) && accessToken) {
     return (

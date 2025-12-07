@@ -3,13 +3,13 @@ import Logo from "../../assets/icons/Logo";
 
 export default function Footer() {
   return (
-    <footer className="border-t pt-2 text-muted-foreground">
+    <footer className="border-t pt-4 text-muted-foreground">
       <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Left: Logo and description */}
         <div className="flex flex-col items-center md:items-start gap-2">
           <Logo />
           <p className="max-w-md text-center md:text-left">
-            DigitalWallet is a secure, scalable financial platform built with
+            Digital Wallet is a secure, scalable financial platform built with
             React, Tailwind CSS, and ShadCN UI. Designed for real-world use
             cases and professional-grade performance.
           </p>

@@ -7,12 +7,12 @@ import { useNavigate } from "react-router-dom";
 
 export default function HeroBanner() {
   const { user } = useAppSelector((state) => state.auth);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleGetStarted = () => {
-   if (!user?.role) {
-     return navigate(`/login?redirectTo=/user/dashboard`);
-   }
+    if (!user?.role) {
+      return navigate(`/login?redirectTo=/user/dashboard`);
+    }
   };
   return (
     <section
@@ -51,7 +51,7 @@ export default function HeroBanner() {
               size="lg"
               variant="outline"
               className="text-indigo-700  border-white hover:bg-white/20 rounded-xl"
-              onClick={() => (window.location.href = "/learn-more")}
+              onClick={() => navigate("/features")}
             >
               Learn More
             </Button>
