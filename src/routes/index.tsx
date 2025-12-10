@@ -52,6 +52,7 @@ export const router = createBrowserRouter([
   //  Agent dashboard
   {
     path: "/agent",
+    // Component: withAuth(DashboardLayout, role.agent as TRole),
     Component: DashboardLayout,
     children: [
       { index: true, element: <Navigate to="/agent/dashboard" /> },

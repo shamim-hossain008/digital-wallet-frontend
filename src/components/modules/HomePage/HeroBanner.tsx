@@ -11,20 +11,21 @@ export default function HeroBanner() {
 
   const handleGetStarted = () => {
     if (!user?.role) {
-      return navigate(`/login?redirectTo=/user/dashboard`);
+      navigate(`/login?redirectTo=/user/dashboard`);
+    } else {
+      navigate("/user/dashboard");
     }
   };
+
   return (
-    <section
-      className="w-full bg-linear-to-br
- from-indigo-600 via-blue-600 to-sky-500 text-white py-20 px-6 md:px-16 lg:px-24"
-    >
+    <section className="w-full bg-gradient-to-br from-indigo-600 via-blue-600 to-sky-500 text-white py-20 px-6 md:px-16 lg:px-24">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-        {/* LEFT CONTENT */}
+        {/* LEFT */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
           className="space-y-6"
         >
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
@@ -34,8 +35,8 @@ export default function HeroBanner() {
           </h1>
 
           <p className="text-lg md:text-xl opacity-90 max-w-lg">
-            Manage your money effortlessly. Send payments, track transactions,
-            and handle your finances—all in one secure place.
+            Manage your money effortlessly — send payments, track transactions &
+            control your finances in one secured dashboard.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-3">
@@ -50,7 +51,7 @@ export default function HeroBanner() {
             <Button
               size="lg"
               variant="outline"
-              className="text-indigo-700  border-white hover:bg-white/20 rounded-xl"
+              className="text-white border-white rounded-xl hover:bg-white/20"
               onClick={() => navigate("/features")}
             >
               Learn More
@@ -58,20 +59,18 @@ export default function HeroBanner() {
           </div>
         </motion.div>
 
-        {/* RIGHT ANIMATION / ILLUSTRATION */}
+        {/* RIGHT */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.1 }}
           className="flex justify-center"
         >
-          <div className="relative w-[320px] md:w-[400px] lg:w-[450px]">
-            <img
-              src={wallet}
-              alt="Digital Wallet Illustration"
-              className="drop-shadow-2xl rounded-3xl select-none"
-            />
-          </div>
+          <img
+            src={wallet}
+            alt="Digital Wallet"
+            className="drop-shadow-2xl rounded-3xl select-none w-[320px] md:w-[400px] lg:w-[450px]"
+          />
         </motion.div>
       </div>
     </section>

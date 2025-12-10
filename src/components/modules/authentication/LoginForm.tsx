@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -19,7 +18,7 @@ import { setAuth } from "@/redux/features/auth/auth.slice";
 import type { ILoginRequest } from "@/types";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { Link, useNavigate, useSearchParams } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
 export function LoginForm({
@@ -29,9 +28,8 @@ export function LoginForm({
   const [login, { isLoading }] = useLoginMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [searchParas] = useSearchParams();
-
-  const redirectTo = searchParas.get("redirectTo");
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo");
 
   const form = useForm<ILoginRequest>({
     defaultValues: {
@@ -40,66 +38,56 @@ export function LoginForm({
     },
   });
 
-  //
+  const roleRoutes: Record<string, string> = {
+    ADMIN: "/admin/dashboard",
+    AGENT: "/agent/dashboard",
+    USER: "/user/dashboard",
+  };
+
   const handleRoleRedirect = (role: string) => {
     if (redirectTo) {
-      return navigate(redirectTo, { replace: true });
+      navigate(redirectTo, { replace: true });
+    } else {
+      navigate(roleRoutes[role] || "/user/dashboard");
     }
-    const roleRoutes: Record<string, string> = {
-      ADMIN: "/admin/dashboard",
-      AGENT: "/agent/dashboard",
-      USER: "/user/dashboard",
-    };
-
-    navigate(roleRoutes[role] || "/user/dashboard");
   };
 
   const onSubmit: SubmitHandler<ILoginRequest> = async (data) => {
     try {
       const res = await login(data).unwrap();
 
-      const wrapperData = res.data;
-
-      if (res.success && wrapperData) {
-        // Dispatch auth slice
+      const userData = res?.data;
+      if (res.success && userData) {
         dispatch(
           setAuth({
-            accessToken: wrapperData.accessToken,
-            refreshToken: wrapperData.refreshToken ?? null,
-            user: wrapperData.user,
+            accessToken: userData.accessToken,
+            refreshToken: userData.refreshToken ?? null,
+            user: userData.user,
           })
         );
-        // Persist minimal auth for axios interceptor or page reloads
+
         localStorage.setItem(
           "dw_auth",
           JSON.stringify({
-            accessToken: wrapperData.accessToken,
-            refreshToken: wrapperData.refreshToken ?? null,
-            user: { ...wrapperData.user, password: undefined },
+            accessToken: userData.accessToken,
+            refreshToken: userData.refreshToken ?? null,
+            user: { ...userData.user, password: undefined },
           })
         );
-        toast.success("user login successfully");
-        // console.log(store.getState().auth);
-        handleRoleRedirect(wrapperData.user.role);
+
+        toast.success("User login successful!");
+        handleRoleRedirect(userData.user.role);
       }
     } catch (error: any) {
-      console.log("Login error", error);
-
-      if (error.data?.message === "Password does not match") {
-        toast.error("Invalid credentials");
-      }
-      const errorMessage =
-        error?.data?.message || // backend message
-        (typeof error === "string" ? error : undefined) || // plain string error
-        "Login failed. Please try again.";
-
-      toast.error(errorMessage);
+      const message =
+        error?.data?.message ||
+        "Login failed! Please check your email or password.";
+      toast.error(message);
     }
   };
 
-  if (isLoading) {
-    return <AuthSkeleton />;
-  }
+  if (isLoading) return <AuthSkeleton />;
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
@@ -112,45 +100,33 @@ export function LoginForm({
       <div className="grid gap-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* User Email */}
+            {/* Email */}
             <FormField
               control={form.control}
               name="email"
+              rules={{ required: "Email is required" }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="user@gmail.com"
-                      {...field}
-                      value={field.value || ""}
-                    />
+                    <Input placeholder="user@gmail.com" {...field} />
                   </FormControl>
-                  <FormDescription className="sr-only">
-                    This is your public display name.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {/* passWord */}
+
+            {/* Password */}
             <FormField
               control={form.control}
               name="password"
+              rules={{ required: "Password is required" }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="********"
-                      {...field}
-                      value={field.value || ""}
-                    />
+                    <Input type="password" placeholder="********" {...field} />
                   </FormControl>
-                  <FormDescription className="sr-only">
-                    This is your public display name.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -161,24 +137,26 @@ export function LoginForm({
             </Button>
           </form>
         </Form>
-        <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-          <span className="relative z-10 bg-background px-2 text-muted-foreground">
+
+        <div className="relative text-center text-sm">
+          <span className="px-2 bg-background text-muted-foreground">
             Or continue with
           </span>
         </div>
+
         <Button
-          onClick={() => window.open(`${config.baseUrl}/auth/google`)}
           type="button"
           variant="outline"
-          className="w-full cursor-pointer"
+          className="w-full"
+          onClick={() => window.open(`${config.baseUrl}/auth/google`, "_self")}
         >
           Login with Google
         </Button>
       </div>
 
       <div className="text-center text-sm">
-        Don&apos;t have an account?
-        <Link to="/register" className="underline underline-offset-4">
+        Don&apos;t have an account?{" "}
+        <Link to="/register" className="underline">
           Register Now
         </Link>
       </div>

@@ -74,7 +74,9 @@ export default function Navbar() {
       return (
         <NavigationMenuItem key={link.href} className="w-full">
           <NavigationMenuLink asChild className="py-1.5">
-            <Link to={link.href}>{link.label}</Link>
+            <Link to={link.href} className="hover:text-blue-600">
+              {link.label}
+            </Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
       );
