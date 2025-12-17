@@ -112,7 +112,7 @@ export function RegisterForm({
       const result = await register(userInfo).unwrap();
       console.log("result:", result);
       toast.success("User created successfully");
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       console.log("Register Error", error);
       const err = error as { status?: number | string; data?: any };

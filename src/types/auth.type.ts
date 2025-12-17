@@ -25,6 +25,14 @@ export interface ILoginData {
   user: IUser;
 }
 
+// Transaction mini type for dashboard
+export interface IRecentTransaction {
+  _id: string;
+  type: "deposit" | "withdraw" | "transfer";
+  amount: number;
+  date: string;
+  status?: "success" | "pending" | "failed";
+}
 // User Info Response (GET /user/me)
 
 export interface IUserInfoData {
@@ -32,6 +40,9 @@ export interface IUserInfoData {
   name: string;
   email: string;
   role: "ADMIN" | "AGENT" | "USER";
+
+  walletBalance: number;
+  recentTransactions: IRecentTransaction[];
 }
 
 // Request Types
@@ -69,7 +80,6 @@ export interface IRegisterResponse {
   message?: string;
   data: IUser;
 }
-
 
 export interface TMeta {
   total?: number;

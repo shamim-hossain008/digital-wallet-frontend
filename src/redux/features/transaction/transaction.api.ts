@@ -36,29 +36,29 @@ export const transactionApi = baseApi.injectEndpoints({
     // Deposit
 
     depositMoney: builder.mutation<IResponse<any>, ITransactionPayLoad>({
-      query: (body) => ({
+      query: (data) => ({
         url: "/transactions/deposit",
         method: "POST",
-        data: body,
+        data,
       }),
       invalidatesTags: ["Transaction", "User"],
     }),
     // Withdraw
     withdrawMoney: builder.mutation<IResponse<any>, ITransactionPayLoad>({
-      query: (body) => ({
+      query: (data) => ({
         url: "/transactions/withdraw",
         method: "POST",
-        data: body,
+        data,
       }),
       invalidatesTags: ["Transaction", "User"],
     }),
 
     // Transfer to user
     transferMoney: builder.mutation<IResponse<any>, ITransactionPayLoad>({
-      query: (body) => ({
+      query: (data) => ({
         url: "/transactions/transfer",
         method: "POST",
-        data: body,
+        data,
       }),
       invalidatesTags: ["Transaction", "User"],
     }),

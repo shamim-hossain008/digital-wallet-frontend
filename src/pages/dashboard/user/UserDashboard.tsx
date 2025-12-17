@@ -5,30 +5,34 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
 
 import {
-  LineChart,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer,
 } from "recharts";
 
-import { useNavigate } from "react-router-dom";
+import { useCountUp } from "@/hooks/useCountUp";
 import { ArrowDownRight, ArrowUpRight, Send } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function UserDashboard() {
   const { data, isLoading, isError } = useUserInfoQuery();
   const navigate = useNavigate();
 
-  console.log("use Dashboard data:", data);
+  const wallet = data?.data;
+  const walletBalance = wallet?.walletBalance ?? 0;
+  const recentTransactions = wallet?.recentTransactions ?? [];
 
-  const walletBalance = data?.data?.walletBalance ?? 0;
-  const recentTransactions = data?.data?.recentTransactions ?? [];
+  // animated balance
+  const animatedBalance = useCountUp(walletBalance);
 
-  const chartData = recentTransactions?.slice(0,7).map((tx:any)=>({
-    date: new Date(tx.date).toLocaleDateString(),
-    amount:tx.amount
-  })) ?? []
+  const chartData =
+    recentTransactions?.slice(0, 7).map((tx: any) => ({
+      date: tx?.date ? new Date(tx.date).toLocaleDateString() : "",
+      amount: tx?.amount ?? 0,
+    })) ?? [];
 
   if (isError) {
     return <div className="text-center">Failed to load Dashboard</div>;
@@ -46,7 +50,13 @@ function UserDashboard() {
             {isLoading ? (
               <Skeleton className="h-10 w-32 mt-2 bg-white/30 rounded-lg" />
             ) : (
-              <p className="text-4xl font-bold">${walletBalance.toFixed(2)}</p>
+              <p className="text-4xl font-bold">
+                $
+                {animatedBalance.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </p>
             )}
           </div>
 
