@@ -64,21 +64,28 @@ function UserDashboard() {
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => navigate("/user/deposit")}
+              onClick={() =>
+                navigate("/user/my-wallet", { state: { tab: "deposit" } })
+              }
             >
               <ArrowUpRight className="mr-1 h-4 w-4" /> Deposit
             </Button>
+
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => navigate("/user/withdraw")}
+              onClick={() =>
+                navigate("/user/my-wallet", { state: { tab: "withdraw" } })
+              }
             >
               <ArrowDownRight className="mr-1 h-4 w-4" /> Withdraw
             </Button>
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => navigate("/user/transfer")}
+              onClick={() =>
+                navigate("/user/my-wallet", { state: { tab: "transfer" } })
+              }
             >
               <Send className="mr-1 h-4 w-4" /> Transfer
             </Button>
