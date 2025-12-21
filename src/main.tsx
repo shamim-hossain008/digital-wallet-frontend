@@ -7,6 +7,8 @@ import "./index.css";
 import { ThemeProvider } from "./providers/theme.providers.tsx";
 import { store } from "./redux/store.ts";
 import { router } from "./routes/index.tsx";
+import "react-phone-number-input/style.css";
+
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

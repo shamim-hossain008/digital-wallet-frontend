@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Pagination } from "@/components/ui/pagination";
-
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -19,19 +18,21 @@ function MyTransactions() {
   const [typeFilter, setTypeFilter] = useState("");
   const [dateRange, setDateRange] = useState("");
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("");
+
+  // sorting
+  const [sortBy, setSortBy] = useState<string | undefined>();
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | undefined>();
 
   const { data, isLoading } = useGetMyTransactionsQuery({
     page,
-    type: typeFilter,
-    range: dateRange,
-    search,
-    sort,
+    type: typeFilter || undefined,
+    range: dateRange || undefined,
+    search: search || undefined,
+    sortBy,
+    sortOrder,
   });
 
-  console.log("MyTransactions:", data);
-
-  const transactions = data?.data?.data ?? [];
+  const transactions = data?.data?.transactions ?? [];
   const totalPages = data?.data?.totalPages ?? 1;
 
   // CSV Export
@@ -72,24 +73,30 @@ function MyTransactions() {
         <CardContent>
           {/* Filters */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
-            {/* Type Filter */}
+            {/* Type */}
             <Select
               defaultValue="all"
-              onValueChange={(v) => setTypeFilter(v === "all" ? "" : v)}
+              onValueChange={(v) => {
+                setPage(1);
+                setTypeFilter(v === "all" ? "" : v);
+              }}
             >
               <SelectTrigger>Filter by Type</SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All</SelectItem>
-                <SelectItem value="deposit">Deposit</SelectItem>
-                <SelectItem value="withdraw">Withdraw</SelectItem>
-                <SelectItem value="transfer">Transfer</SelectItem>
+                <SelectItem value="DEPOSIT">Deposit</SelectItem>
+                <SelectItem value="WITHDRAW">Withdraw</SelectItem>
+                <SelectItem value="TRANSFER">Transfer</SelectItem>
               </SelectContent>
             </Select>
 
             {/* Date Range */}
             <Select
               defaultValue="all"
-              onValueChange={(v) => setDateRange(v === "all" ? "" : v)}
+              onValueChange={(v) => {
+                setPage(1);
+                setDateRange(v === "all" ? "" : v);
+              }}
             >
               <SelectTrigger>Date Range</SelectTrigger>
               <SelectContent>
@@ -100,7 +107,22 @@ function MyTransactions() {
             </Select>
 
             {/* Sorting */}
-            <Select onValueChange={(v) => setSort(v)}>
+            <Select
+              defaultValue="all"
+              onValueChange={(v) => {
+                setPage(1);
+
+                if (v === "all") {
+                  setSortBy(undefined);
+                  setSortOrder(undefined);
+                  return;
+                }
+
+                const [field, order] = v.split("-");
+                setSortBy(field === "date" ? "timestamp" : field);
+                setSortOrder(order as "asc" | "desc");
+              }}
+            >
               <SelectTrigger>Sort</SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Default</SelectItem>
@@ -114,7 +136,10 @@ function MyTransactions() {
             {/* Search */}
             <Input
               placeholder="Search by Email or Amount…"
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setPage(1);
+                setSearch(e.target.value);
+              }}
             />
           </div>
 
@@ -123,11 +148,6 @@ function MyTransactions() {
             <Skeleton className="h-40 w-full" />
           ) : transactions.length === 0 ? (
             <div className="text-center py-10">
-              <img
-                src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png" 
-                alt="No data"
-                className="w-40 mx-auto mb-3"
-              />
               <p className="text-gray-500">No transactions found.</p>
             </div>
           ) : (
@@ -143,21 +163,9 @@ function MyTransactions() {
               <tbody>
                 {transactions.map((tx: any) => (
                   <tr key={tx._id} className="text-center border-t">
-                    <td className="py-2 capitalize">{tx.type}</td>
+                    <td className="py-2">{tx.type}</td>
                     <td>${tx.amount.toFixed(2)}</td>
-                    <td>
-                      <span
-                        className={`px-2 py-1 rounded text-xs ${
-                          tx.status === "success"
-                            ? "bg-green-500 text-white"
-                            : tx.status === "pending"
-                            ? "bg-yellow-500 text-white"
-                            : "bg-red-500 text-white"
-                        }`}
-                      >
-                        {tx.status}
-                      </span>
-                    </td>
+                    <td>{tx.status}</td>
                     <td>{new Date(tx.timestamp).toLocaleString()}</td>
                   </tr>
                 ))}
@@ -170,7 +178,7 @@ function MyTransactions() {
             <Pagination
               currentPage={page}
               totalPages={totalPages}
-              onPageChange={(num) => setPage(num)}
+              onPageChange={setPage}
             />
           )}
         </CardContent>

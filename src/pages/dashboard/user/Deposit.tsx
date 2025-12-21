@@ -15,8 +15,7 @@ function Deposit() {
   const [deposit, { isLoading }] = useDepositMoneyMutation();
   const navigate = useNavigate();
 
-  console.log("amount:", amount);
-  console.log(" deposit:", deposit);
+  
 
   // Auto-focus
   const inputRef = useRef<HTMLInputElement>(null);

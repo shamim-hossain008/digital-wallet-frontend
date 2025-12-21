@@ -40,6 +40,7 @@ export interface IUserInfoData {
   name: string;
   email: string;
   role: "ADMIN" | "AGENT" | "USER";
+  phone?:string
 
   walletBalance: number;
   recentTransactions: IRecentTransaction[];

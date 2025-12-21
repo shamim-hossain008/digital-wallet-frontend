@@ -1,32 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { baseApi } from "@/redux/baseApi";
-import type { IResponse } from "@/types";
-
-export interface ITransactionPayLoad {
-  amount: number;
-  pin?: string;
-  receiver?: string;
-}
-
-export interface ITransactionFilter {
-  page?: number;
-  limit?: number;
-  type?: string;
-  range?: string;
-  search?: string;
-  sort?: string;
-}
+import type {
+  IResponse,
+  ITransactionFilter,
+  ITransactionListData,
+  ITransactionPayLoad,
+} from "@/types";
 
 export const transactionApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // get all user transaction
     getMyTransactions: builder.query<
-      IResponse<{ data: any[]; totalPages: number }>,
+      IResponse<ITransactionListData>,
       ITransactionFilter
     >({
       query: (params) => ({
-        url: "/transactions/my",
+        url: "/transactions/me",
         method: "GET",
         params,
       }),

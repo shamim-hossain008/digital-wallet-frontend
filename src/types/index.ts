@@ -14,6 +14,13 @@ export type {
   IVerifyOtp,
 } from "./auth.type";
 
+export type {
+  ITransaction,
+  ITransactionFilter,
+  ITransactionListData,
+  ITransactionPayLoad,
+} from "./transaction.type";
+
 // Generic API Response Wrapper
 
 export interface IResponse<T> {

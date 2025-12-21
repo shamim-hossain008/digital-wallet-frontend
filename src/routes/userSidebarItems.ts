@@ -1,3 +1,4 @@
+import ProfileManagement from "@/pages/dashboard/user/ProfileManagement";
 import type { ISidebarItem } from "@/types";
 
 import { lazy } from "react";
@@ -26,6 +27,11 @@ export const userSidebarItems: ISidebarItem[] = [
         title: "MyTransactions",
         url: "/user/transactions",
         component: MyTransactions,
+      },
+      {
+        title: "Profile",
+        url: "/user/profile",
+        component: ProfileManagement,
       },
     ],
   },
