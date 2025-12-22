@@ -1,4 +1,4 @@
-import ProfileManagement from "@/pages/dashboard/user/ProfileManagement";
+import UserProfile from "@/pages/dashboard/user/UserProfile";
 import type { ISidebarItem } from "@/types";
 
 import { lazy } from "react";
@@ -31,8 +31,9 @@ export const userSidebarItems: ISidebarItem[] = [
       {
         title: "Profile",
         url: "/user/profile",
-        component: ProfileManagement,
+        component: UserProfile,
       },
+   
     ],
   },
 ];

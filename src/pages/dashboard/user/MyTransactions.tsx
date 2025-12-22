@@ -10,7 +10,14 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { useGetMyTransactionsQuery } from "@/redux/features/transaction/transaction.api";
+import { safeAmount } from "@/utils/formatters";
+import {
+  getDirectionLabel,
+  getTransactionDirection,
+} from "@/utils/transactionHelpers";
+import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 
 function MyTransactions() {
@@ -32,6 +39,9 @@ function MyTransactions() {
     sortOrder,
   });
 
+  const { data: userData } = useUserInfoQuery();
+  const userId = userData?.data?._id;
+
   const transactions = data?.data?.transactions ?? [];
   const totalPages = data?.data?.totalPages ?? 1;
 
@@ -43,7 +53,8 @@ function MyTransactions() {
       ["Type", "Amount", "Status", "Date"],
       ...transactions.map((tx: any) => [
         tx.type,
-        tx.amount,
+        getDirectionLabel(getTransactionDirection(tx, userId as string)),
+        safeAmount(tx.amount),
         tx.status,
         new Date(tx.timestamp).toLocaleDateString(),
       ]),
@@ -148,29 +159,88 @@ function MyTransactions() {
             <Skeleton className="h-40 w-full" />
           ) : transactions.length === 0 ? (
             <div className="text-center py-10">
-              <p className="text-gray-500">No transactions found.</p>
+              <p className="text-muted-foreground">No transactions found.</p>
             </div>
           ) : (
-            <table className="w-full border text-sm">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="p-2">Type</th>
-                  <th className="p-2">Amount</th>
-                  <th className="p-2">Status</th>
-                  <th className="p-2">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {transactions.map((tx: any) => (
-                  <tr key={tx._id} className="text-center border-t">
-                    <td className="py-2">{tx.type}</td>
-                    <td>${tx.amount.toFixed(2)}</td>
-                    <td>{tx.status}</td>
-                    <td>{new Date(tx.timestamp).toLocaleString()}</td>
+            <div className="overflow-x-auto">
+              <table className="w-full border text-sm">
+                <thead className="bg-muted text-muted-foreground">
+                  <tr>
+                    <th className="p-3 text-left">Type</th>
+                    <th className="p-3 text-left">Direction</th>
+                    <th className="p-3 text-right">Amount</th>
+                    <th className="p-3 text-center">Status</th>
+                    <th className="p-3 text-right">Date</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody>
+                  {transactions.map((tx: any) => {
+                    const direction = getTransactionDirection(
+                      tx,
+                      userId as string
+                    );
+                    const isCredit = direction === "credit";
+
+                    return (
+                      <tr
+                        key={tx._id}
+                        className="border-t hover:bg-muted/50 transition"
+                      >
+                        {/* Type */}
+                        <td className="p-3 capitalize">{tx.type}</td>
+
+                        {/* Direction */}
+                        <td className="p-3 flex items-center gap-2">
+                          {isCredit ? (
+                            <ArrowDownLeft className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                          ) : (
+                            <ArrowUpRight className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                          )}
+                          <span
+                            className={`text-sm ${
+                              isCredit
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : "text-rose-600 dark:text-rose-400"
+                            }`}
+                          >
+                            {getDirectionLabel(direction)}
+                          </span>
+                        </td>
+
+                        {/* Amount */}
+                        <td
+                          className={`p-3 text-center font-semibold ${
+                            isCredit
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : "text-rose-600 dark:text-rose-400"
+                          }`}
+                        >
+                          {isCredit ? "+" : "-"}$
+                          {safeAmount(tx.amount).toFixed(2)}
+                        </td>
+
+                        {/* Status */}
+                        <td
+                          className={`p-4 text-center font-medium ${
+                            tx.status === "COMPLETED"
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : "text-rose-600 dark:text-rose-400"
+                          }`}
+                        >
+                          {tx.status}
+                        </td>
+
+                        {/* Date */}
+                        <td className="text-center text-xs opacity-70">
+                          {new Date(tx.timestamp).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           )}
 
           {/* Pagination */}

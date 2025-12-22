@@ -12,6 +12,7 @@ import { agentSidebarItems } from "./agentSidebarItems";
 import { userSidebarItems } from "./userSidebarItems";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
+import ProfileManagement from "@/pages/dashboard/user/ProfileManagement";
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +68,11 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/user/dashboard" /> },
       ...generateRoutes(userSidebarItems),
+
+      {
+        path:"profile/edit",
+        element:<ProfileManagement/>
+      }
     ],
   },
 

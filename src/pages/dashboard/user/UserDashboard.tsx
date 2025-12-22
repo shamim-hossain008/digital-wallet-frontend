@@ -14,7 +14,13 @@ import {
 } from "recharts";
 
 import { useCountUp } from "@/hooks/useCountUp";
-import { ArrowDownRight, ArrowUpRight, Send } from "lucide-react";
+import { safeAmount, timeAgo } from "@/utils/formatters";
+import {
+  getDirectionLabel,
+  getTransactionDirection,
+} from "@/utils/transactionHelpers";
+import { ArrowDownLeft, ArrowUpRight, Send } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 function UserDashboard() {
@@ -24,15 +30,27 @@ function UserDashboard() {
   const wallet = data?.data;
   const walletBalance = wallet?.walletBalance ?? 0;
   const recentTransactions = wallet?.recentTransactions ?? [];
+  const userId = wallet?._id;
 
   // animated balance
   const animatedBalance = useCountUp(walletBalance);
 
+  // Detect new transaction
+  const prevTxCount = useRef<number>(0);
+  useEffect(() => {
+    prevTxCount.current = recentTransactions.length;
+  }, [recentTransactions.length]);
+
+  // chart Data
   const chartData =
-    recentTransactions?.slice(0, 7).map((tx: any) => ({
-      date: tx?.date ? new Date(tx.date).toLocaleDateString() : "",
-      amount: tx?.amount ?? 0,
-    })) ?? [];
+    recentTransactions.slice(0, 7).map((tx: any) => {
+      const ts = tx.timestamp ?? tx.date ?? tx.createdAt;
+
+      return {
+        date: ts ? new Date(ts).toLocaleDateString() : "",
+        amount: safeAmount(tx.amount),
+      };
+    }) ?? [];
 
   if (isError) {
     return <div className="text-center">Failed to load Dashboard</div>;
@@ -42,8 +60,8 @@ function UserDashboard() {
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">User Dashboard</h1>
 
-      {/* Wallet + Quick Actions */}
-      <Card className="bg-primary text-white shadow-xl border-0 rounded-2xl">
+      {/* Wallet Card */}
+      <Card className="bg-primary text-primary-foreground shadow-xl border-0 rounded-2xl">
         <CardHeader className="flex justify-between items-center">
           <div>
             <p className="text-sm opacity-90">Current Wallet Balance</p>
@@ -68,7 +86,7 @@ function UserDashboard() {
                 navigate("/user/my-wallet", { state: { tab: "deposit" } })
               }
             >
-              <ArrowUpRight className="mr-1 h-4 w-4" /> Deposit
+              <ArrowDownLeft className="mr-1 h-4 w-4" /> Deposit
             </Button>
 
             <Button
@@ -78,8 +96,9 @@ function UserDashboard() {
                 navigate("/user/my-wallet", { state: { tab: "withdraw" } })
               }
             >
-              <ArrowDownRight className="mr-1 h-4 w-4" /> Withdraw
+              <ArrowUpRight className="mr-1 h-4 w-4" /> Withdraw
             </Button>
+
             <Button
               variant="secondary"
               size="sm"
@@ -93,7 +112,7 @@ function UserDashboard() {
         </CardHeader>
       </Card>
 
-      {/* Chart Section */}
+      {/* Chart */}
       <Card className="rounded-xl">
         <CardHeader>
           <CardTitle>Transaction Activity</CardTitle>
@@ -128,6 +147,7 @@ function UserDashboard() {
         <CardHeader>
           <CardTitle className="text-lg">Recent Transactions</CardTitle>
         </CardHeader>
+
         <CardContent>
           {isLoading ? (
             <div className="space-y-3">
@@ -141,18 +161,61 @@ function UserDashboard() {
             </p>
           ) : (
             <ul className="space-y-3">
-              {recentTransactions.slice(0, 5).map((tx: any, i: number) => (
-                <li
-                  key={i}
-                  className="flex justify-between pb-2 border-b text-sm"
-                >
-                  <span className="capitalize">{tx.type}</span>
-                  <span>${tx.amount?.toFixed(2)}</span>
-                  <span className="opacity-70">
-                    {new Date(tx.date).toLocaleDateString()}
-                  </span>
-                </li>
-              ))}
+              {recentTransactions.slice(0, 5).map((tx: any, i: number) => {
+                const direction = getTransactionDirection(tx, userId as string);
+                const isCredit = direction === "credit";
+                const isNew =
+                  i === 0 && recentTransactions.length > prevTxCount.current;
+
+                return (
+                  <li
+                    key={tx._id || i}
+                    className={`grid grid-cols-3 items-center pb-2 border-b text-sm transition
+                      ${isNew ? "animate-pulse bg-muted/40 rounded-md p-2" : ""}
+                    `}
+                  >
+                    {/* LEFT */}
+                    <div className="flex items-center gap-2">
+                      {isCredit ? (
+                        <ArrowDownLeft className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                      ) : (
+                        <ArrowUpRight className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+                      )}
+
+                      <div className="flex flex-col">
+                        <span className="capitalize font-medium">
+                          {tx.type}
+                        </span>
+                        <span
+                          className={`text-xs ${
+                            isCredit
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : "text-rose-600 dark:text-rose-400"
+                          }`}
+                        >
+                          {getDirectionLabel(direction)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* CENTER: Amount */}
+                    <span
+                      className={`w-28 text-right font-semibold justify-self-center ${
+                        isCredit
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-rose-600 dark:text-rose-400"
+                      }`}
+                    >
+                      {isCredit ? "+" : "-"}${safeAmount(tx.amount).toFixed(2)}
+                    </span>
+
+                    {/* RIGHT: Time */}
+                    <span className="text-right text-xs opacity-70">
+                      {timeAgo(tx.timestamp)}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </CardContent>

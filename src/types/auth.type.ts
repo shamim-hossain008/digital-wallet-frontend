@@ -34,13 +34,20 @@ export interface IRecentTransaction {
   status?: "success" | "pending" | "failed";
 }
 // User Info Response (GET /user/me)
-
 export interface IUserInfoData {
   _id: string;
   name: string;
   email: string;
   role: "ADMIN" | "AGENT" | "USER";
-  phone?:string
+
+  phone?: string;
+  photo?: string;
+
+  // ✅ ADD THESE
+  isActive?: "ACTIVE" | "INACTIVE";
+  isVerified?: boolean;
+  isSuspended?: boolean;
+  isApproved?: boolean;
 
   walletBalance: number;
   recentTransactions: IRecentTransaction[];
