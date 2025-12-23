@@ -4,8 +4,10 @@ import { lazy } from "react";
 const AgentDashboard = lazy(
   () => import("@/pages/dashboard/agent/AgentDashboard")
 );
-const CashIn = lazy(() => import("@/pages/dashboard/agent/CashIn"));
-const CashOut = lazy(() => import("@/pages/dashboard/agent/CashOut"));
+const AddMoney = lazy(() => import("@/pages/dashboard/agent/AddMoney"));
+const WithdrawMoney = lazy(
+  () => import("@/pages/dashboard/agent/WithdrawMoney")
+);
 const AgentTransactions = lazy(
   () => import("@/pages/dashboard/agent/AgentTransactions")
 );
@@ -16,8 +18,12 @@ export const agentSidebarItems: ISidebarItem[] = [
 
     items: [
       { title: "Overview", url: "/agent/dashboard", component: AgentDashboard },
-      { title: "Cash In", url: "/agent/cash-in", component: CashIn },
-      { title: "Cash Out", url: "/agent/cash-out", component: CashOut },
+      { title: "Add Money", url: "/agent/cash-in", component: AddMoney },
+      {
+        title: "Withdraw Money",
+        url: "/agent/cash-out",
+        component: WithdrawMoney,
+      },
       {
         title: "MY Transactions",
         url: "/agent/transaction",

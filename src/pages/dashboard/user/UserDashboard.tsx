@@ -78,7 +78,7 @@ function UserDashboard() {
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <Button
               variant="secondary"
               size="sm"

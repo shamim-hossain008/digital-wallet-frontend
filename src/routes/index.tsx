@@ -1,5 +1,11 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import { role } from "@/constants/role";
+import Login from "@/pages/auth/Login";
+import Register from "@/pages/auth/Register";
+import ProfileManagement from "@/pages/dashboard/user/ProfileManagement";
+import type { TRole } from "@/types";
 import { generateRoutes } from "@/utils/generateRoutes";
+import { withAuth } from "@/utils/withAuth";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../App";
 import About from "../pages/public/About";
@@ -10,9 +16,6 @@ import Home from "../pages/public/Home";
 import { adminSidebarItems } from "./adminSidebarItems";
 import { agentSidebarItems } from "./agentSidebarItems";
 import { userSidebarItems } from "./userSidebarItems";
-import Login from "@/pages/auth/Login";
-import Register from "@/pages/auth/Register";
-import ProfileManagement from "@/pages/dashboard/user/ProfileManagement";
 
 export const router = createBrowserRouter([
   {
@@ -43,8 +46,8 @@ export const router = createBrowserRouter([
   // Admin dashboard
   {
     path: "/admin",
-    // Component: withAuth(DashboardLayout, role.admin as TRole),
-    Component: DashboardLayout,
+    Component: withAuth(DashboardLayout, role.admin as TRole),
+
     children: [
       { index: true, element: <Navigate to="/admin/dashboard" /> },
       ...generateRoutes(adminSidebarItems),
@@ -53,8 +56,8 @@ export const router = createBrowserRouter([
   //  Agent dashboard
   {
     path: "/agent",
-    // Component: withAuth(DashboardLayout, role.agent as TRole),
-    Component: DashboardLayout,
+    Component: withAuth(DashboardLayout, role.agent as TRole),
+
     children: [
       { index: true, element: <Navigate to="/agent/dashboard" /> },
       ...generateRoutes(agentSidebarItems),
@@ -63,16 +66,16 @@ export const router = createBrowserRouter([
   // user Dashboard
   {
     path: "/user",
-    // Component: withAuth(DashboardLayout, role.user as TRole),
-    Component: DashboardLayout,
+    Component: withAuth(DashboardLayout, role.user as TRole),
+
     children: [
       { index: true, element: <Navigate to="/user/dashboard" /> },
       ...generateRoutes(userSidebarItems),
 
       {
-        path:"profile/edit",
-        element:<ProfileManagement/>
-      }
+        path: "profile/edit",
+        element: <ProfileManagement />,
+      },
     ],
   },
 
