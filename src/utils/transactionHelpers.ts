@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-// src/utils/transactionHelpers.ts
+import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 
 export function getTransactionDirection(
   tx: any,
@@ -19,3 +18,25 @@ export function getTransactionDirection(
 export function getDirectionLabel(direction: "credit" | "debit") {
   return direction === "credit" ? "Received" : "Sent";
 }
+
+export function getTransactionMeta(type: "CASH_IN" | "CASH_OUT") {
+  if (type === "CASH_IN") {
+    return {
+      label: "Received",
+      color: "text-green-600 dark:text-green-400",
+      icon: ArrowDownLeft,
+    };
+  }
+
+  return {
+    label: "Sent",
+    color: "text-red-600 dark:text-red-400",
+    icon: ArrowUpRight,
+  };
+}
+
+export const formatAmount = (amount: number) =>
+  amount.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });

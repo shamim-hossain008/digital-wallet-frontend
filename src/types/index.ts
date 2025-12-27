@@ -21,7 +21,7 @@ export type {
   ITransactionPayLoad,
 } from "./transaction.type";
 
-export type { AgentDashboardData } from "./agent.type";
+export type { AgentDashboardData,AgentTransaction } from "./agent.type";
 
 // Generic API Response Wrapper
 

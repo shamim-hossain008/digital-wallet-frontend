@@ -2,9 +2,16 @@ import { baseApi } from "@/redux/baseApi";
 import type { AgentDashboardData } from "@/types";
 import type { ApiWrapper } from "@/types/auth.type";
 
+export type DashboardFilter = {
+  filter?: "daily" | "monthly";
+};
+
 export const agentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAgentDashboard: builder.query<ApiWrapper<AgentDashboardData>, void>({
+    getAgentDashboard: builder.query<
+      ApiWrapper<AgentDashboardData>,
+      DashboardFilter | void
+    >({
       query: () => ({
         url: "/agent/dashboard",
         method: "GET",
@@ -15,7 +22,7 @@ export const agentApi = baseApi.injectEndpoints({
     // Cash in
     cashIn: builder.mutation<
       ApiWrapper<null>,
-      { userId: string; amount: number }
+      { identifier: string; amount: number }
     >({
       query: (data) => ({
         url: "/agent/cash-in",
@@ -26,7 +33,7 @@ export const agentApi = baseApi.injectEndpoints({
     }),
 
     // cash out
-    cshOut: builder.mutation<
+    cashOut: builder.mutation<
       ApiWrapper<null>,
       { useId: string; amount: number }
     >({
@@ -43,5 +50,5 @@ export const agentApi = baseApi.injectEndpoints({
 export const {
   useGetAgentDashboardQuery,
   useCashInMutation,
-  useCshOutMutation,
+  useCashOutMutation,
 } = agentApi;
