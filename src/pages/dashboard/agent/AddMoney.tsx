@@ -18,11 +18,15 @@ function AddMoney() {
 
   const navigate = useNavigate();
 
+  const amountNumber = Number(amount);
+  const isInvalidAmount =
+    isLoading || !identifier || !amountNumber || !amount || amountNumber < 10;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!identifier || !amount) {
-      toast.error("Please fill in all fields");
+    if (!identifier || !isInvalidAmount) {
+      toast.error("Minimum cash-in amount is 10");
       return;
     }
 
@@ -44,7 +48,7 @@ function AddMoney() {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-4 sm:p-6">
+    <div className="mx-auto max-w-lg p-4 sm:p-6">
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -60,11 +64,11 @@ function AddMoney() {
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* User Identifier */}
+              {/* Identifier */}
               <div className="space-y-2">
                 <Label>User Phone or Email</Label>
                 <Input
-                  placeholder="e.g. 017xxxxxxxx or user@email.com"
+                  placeholder="017xxxxxxxx or user@email.com"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                 />
@@ -76,14 +80,23 @@ function AddMoney() {
                 <Input
                   type="number"
                   min={10}
-                  placeholder="Enter amount"
+                  placeholder="Minimum 10"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                 />
+
+                {/* helper text */}
+                {amount && amountNumber < 10 && (
+                  <p className="text-xs text-red-500">Minimum amount is 10</p>
+                )}
               </div>
 
               {/* Submit */}
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isInvalidAmount}
+              >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Add Money
               </Button>

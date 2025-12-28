@@ -1,5 +1,9 @@
 import { baseApi } from "@/redux/baseApi";
-import type { AgentDashboardData } from "@/types";
+import type {
+  AgentDashboardData,
+  AgentTransaction,
+  PaginatedResponse,
+} from "@/types";
 import type { ApiWrapper } from "@/types/auth.type";
 
 export type DashboardFilter = {
@@ -8,17 +12,36 @@ export type DashboardFilter = {
 
 export const agentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    // agent dashboard
     getAgentDashboard: builder.query<
       ApiWrapper<AgentDashboardData>,
       DashboardFilter | void
     >({
-      query: () => ({
+      query: (params) => ({
         url: "/agent/dashboard",
         method: "GET",
+        params,
       }),
       providesTags: ["Agent"],
     }),
 
+    // Agent Transactions
+    getAgentTransactions: builder.query<
+      ApiWrapper<PaginatedResponse<AgentTransaction>>,
+      {
+        page: number;
+        limit: number;
+        filter: "daily" | "monthly";
+        search: string;
+      }
+    >({
+      query: (params) => ({
+        url: "/agent/transactions",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["Transaction"],
+    }),
     // Cash in
     cashIn: builder.mutation<
       ApiWrapper<null>,
@@ -49,6 +72,7 @@ export const agentApi = baseApi.injectEndpoints({
 
 export const {
   useGetAgentDashboardQuery,
+  useGetAgentTransactionsQuery,
   useCashInMutation,
   useCashOutMutation,
 } = agentApi;
