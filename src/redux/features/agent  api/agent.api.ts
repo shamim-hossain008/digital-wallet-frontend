@@ -31,7 +31,7 @@ export const agentApi = baseApi.injectEndpoints({
       {
         page: number;
         limit: number;
-        filter: "daily" | "monthly";
+        filter:string;
         search: string;
       }
     >({
@@ -58,7 +58,7 @@ export const agentApi = baseApi.injectEndpoints({
     // cash out
     cashOut: builder.mutation<
       ApiWrapper<null>,
-      { useId: string; amount: number }
+      { identifier: string; amount: number }
     >({
       query: (data) => ({
         url: "agent/cash-out",

@@ -1,39 +1,42 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { motion } from "framer-motion";
+import { Wallet } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
+
 import { useCashInMutation } from "@/redux/features/agent  api/agent.api";
-import { motion } from "framer-motion";
-import { Loader2, Wallet } from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Label } from "recharts";
-import { toast } from "sonner";
 
 function AddMoney() {
   const [identifier, setIdentifier] = useState("");
   const [amount, setAmount] = useState("");
 
   const [cashIn, { isLoading }] = useCashInMutation();
-
   const navigate = useNavigate();
 
   const amountNumber = Number(amount);
   const isInvalidAmount =
-    isLoading || !identifier || !amountNumber || !amount || amountNumber < 10;
+    !identifier || !amount || Number.isNaN(amountNumber) || amountNumber < 10;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!identifier || !isInvalidAmount) {
-      toast.error("Minimum cash-in amount is 10");
+    if (!identifier || isInvalidAmount) {
+      toast.error("Minimum cash-in amount is 10 and identifier is required");
       return;
     }
 
     try {
+      // call mutation and wait for result
       await cashIn({
         identifier,
-        amount: Number(amount),
+        amount: amountNumber,
       }).unwrap();
 
       toast.success("Money added successfully");
@@ -71,6 +74,7 @@ function AddMoney() {
                   placeholder="017xxxxxxxx or user@email.com"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
+                  disabled={isLoading}
                 />
               </div>
 
@@ -83,6 +87,7 @@ function AddMoney() {
                   placeholder="Minimum 10"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
+                  disabled={isLoading}
                 />
 
                 {/* helper text */}
@@ -94,11 +99,18 @@ function AddMoney() {
               {/* Submit */}
               <Button
                 type="submit"
-                className="w-full"
-                disabled={isInvalidAmount}
+                className="w-full flex items-center justify-center gap-2"
+                disabled={isInvalidAmount || isLoading}
+                aria-busy={isLoading}
               >
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Add Money
+                {isLoading ? (
+                  <>
+                    <Spinner size={18} className="text-white" />
+                    <span>Adding...</span>
+                  </>
+                ) : (
+                  "Add Money"
+                )}
               </Button>
             </form>
           </CardContent>

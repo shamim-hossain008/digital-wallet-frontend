@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 
+import { Spinner } from "@/components/ui/spinner";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
@@ -14,7 +15,7 @@ function Contact() {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormData>();
 
   const onSubmit = (data: FormData) => {
@@ -124,7 +125,13 @@ function Contact() {
             transition"
             type="submit"
           >
-            Send Inquiry
+            {isSubmitting ? (
+              <>
+                <Spinner />
+              </>
+            ) : (
+              "Send Inquiry"
+            )}
           </motion.button>
         </form>
       </motion.div>
