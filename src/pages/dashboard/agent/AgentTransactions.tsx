@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useGetAgentTransactionsQuery } from "@/redux/features/agent  api/agent.api";
+import type { AgentTransaction, FilterType } from "@/types";
 import { exportTransactionsCSV } from "@/utils/exportTransactionsCSV";
 import { motion } from "framer-motion";
 import { ArrowDownLeft, ArrowUpRight, Download } from "lucide-react";
@@ -10,7 +11,7 @@ import { useState } from "react";
 
 function AgentTransactions() {
   const [page, setPage] = useState(1);
-  const [filter, setFilter] = useState<"daily" | "monthly">("daily");
+  const [filter, setFilter] = useState<FilterType>("all");
   const [search, setSearch] = useState("");
 
   const { data, isLoading } = useGetAgentTransactionsQuery({
@@ -21,12 +22,13 @@ function AgentTransactions() {
   });
 
   
-  const transactions = data?.data?.data ?? [];
-  const meta = data?.data?.meta;
 
+   const transactions: AgentTransaction[] = data?.data?.data ?? [];
+   const meta = data?.data?.meta;
   
+
   if (isLoading) return <GlobalSkeleton />;
-  
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -37,8 +39,8 @@ function AgentTransactions() {
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle>My Transactions</CardTitle>
 
-          <div className="flex gap-2 items-center">
-            {/*  */}
+          <div className="flex flex-wrap gap-2 items-center">
+            {/* Filters */}
             <Button
               size="sm"
               variant={filter === "daily" ? "default" : "outline"}
@@ -61,6 +63,17 @@ function AgentTransactions() {
               Monthly
             </Button>
 
+            <Button
+              size="sm"
+              variant={filter === "all" ? "default" : "outline"}
+              onClick={() => {
+                setFilter("all");
+                setPage(1);
+              }}
+            >
+              All
+            </Button>
+
             <Input
               placeholder="Search by email or phone"
               value={search}
@@ -74,6 +87,7 @@ function AgentTransactions() {
             <Button
               onClick={() => exportTransactionsCSV(transactions)}
               variant="outline"
+              disabled={!transactions.length}
             >
               <Download size={16} />
             </Button>
@@ -82,7 +96,7 @@ function AgentTransactions() {
 
         <CardContent className="space-y-3">
           {transactions.length === 0 && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground text-center py-6">
               No transactions found
             </p>
           )}
@@ -98,8 +112,12 @@ function AgentTransactions() {
                 animate={{ opacity: 1, y: 0 }}
                 className="flex justify-between items-center border rounded-md p-3"
               >
-                <div className="flex items-center gap-2">
-                  <Icon className={isIn ? "text-green-600" : "text-red-600"} />
+                <div className="flex items-center gap-3">
+                  <Icon
+                    className={`h-5 w-5 ${
+                      isIn ? "text-green-600" : "text-red-600"
+                    }`}
+                  />
                   <div>
                     <p className="font-medium">{tx.type}</p>
                     <p className="text-xs text-muted-foreground">
@@ -120,22 +138,27 @@ function AgentTransactions() {
           })}
 
           {/* Pagination */}
-          <div className="flex justify-between pt-4">
-            <Button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-              Previous
-            </Button>
+          {meta && (
+            <div className="flex justify-between items-center pt-4">
+              <Button
+                disabled={page === 1}
+                onClick={() => setPage((p) => p - 1)}
+              >
+                Previous
+              </Button>
 
-            <span className="text-sm text-muted-foreground">
-              Page {meta?.page} of {meta?.totalPages}
-            </span>
+              <span className="text-sm text-muted-foreground">
+                Page {meta.page} of {meta.totalPages}
+              </span>
 
-            <Button
-              disabled={page === meta?.totalPages}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              Next
-            </Button>
-          </div>
+              <Button
+                disabled={page === meta.totalPages}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </motion.div>

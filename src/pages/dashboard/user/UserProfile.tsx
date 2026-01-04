@@ -38,7 +38,7 @@ function UserProfile() {
             {/* Avatar */}
             <div className="flex flex-col items-center gap-3">
               <Avatar className="h-24 w-24">
-                <AvatarImage src={user?.photo} />
+                <AvatarImage src={user?.picture} />
                 <AvatarFallback className="bg-muted">
                   <User className="h-10 w-10 opacity-60" />
                 </AvatarFallback>

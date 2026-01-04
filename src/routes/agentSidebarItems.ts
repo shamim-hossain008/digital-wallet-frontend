@@ -12,6 +12,8 @@ const AgentTransactions = lazy(
   () => import("@/pages/dashboard/agent/AgentTransactions")
 );
 
+const AgentProfile = lazy(() => import("@/pages/dashboard/agent/AgentProfile"));
+
 export const agentSidebarItems: ISidebarItem[] = [
   {
     title: "Agent Dashboard",
@@ -28,6 +30,11 @@ export const agentSidebarItems: ISidebarItem[] = [
         title: "MY Transactions",
         url: "/agent/transaction",
         component: AgentTransactions,
+      },
+      {
+        title: "My Profile",
+        url: "/agent/profile",
+        component: AgentProfile,
       },
     ],
   },

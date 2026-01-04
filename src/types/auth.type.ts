@@ -41,9 +41,8 @@ export interface IUserInfoData {
   role: "ADMIN" | "AGENT" | "USER";
 
   phone?: string;
-  photo?: string;
+  picture?: string;
 
-  // ✅ ADD THESE
   isActive?: "ACTIVE" | "INACTIVE";
   isVerified?: boolean;
   isSuspended?: boolean;
@@ -51,6 +50,9 @@ export interface IUserInfoData {
 
   walletBalance: number;
   recentTransactions: IRecentTransaction[];
+
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // Request Types

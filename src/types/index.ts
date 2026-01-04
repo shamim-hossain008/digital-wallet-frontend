@@ -51,4 +51,6 @@ export interface ISidebarItem {
   }[];
 }
 
+export type FilterType = "daily" | "monthly" | "all";
+
 export type TRole = (typeof role)[keyof typeof role];

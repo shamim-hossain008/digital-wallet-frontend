@@ -20,6 +20,15 @@
 .phone-input .PhoneInputCountrySelect {
   border-radius: 0.375rem;
   border: 1px solid hsl(var(--border));
+} 
+
+.phone-input {
+  --PhoneInputCountryFlag-height: 1.2em;
+  --PhoneInputCountrySelectArrow-color: hsl(var(--muted-foreground));
+}
+
+.phone-input .PhoneInputCountry {
+  margin-right: 0.5rem;
 }
 
 @theme inline {

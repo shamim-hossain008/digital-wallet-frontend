@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SummaryCard } from "@/pages/public/card/SummaryCard";
 import { useGetAgentDashboardQuery } from "@/redux/features/agent  api/agent.api";
+import type { FilterType } from "@/types";
 import { exportTransactionsCSV } from "@/utils/exportTransactionsCSV";
 import { formatAmount, getTransactionMeta } from "@/utils/transactionHelpers";
 
@@ -17,13 +18,15 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
-type FilterType = "daily" | "monthly";
-
 function AgentDashboard() {
-  const [filter, setFilter] = useState<FilterType>("daily");
+  const [filter, setFilter] = useState<FilterType>("all");
+  const [page, setPage] = useState(1);
 
-  const { data, isLoading, refetch } = useGetAgentDashboardQuery({ filter });
+  const { data, isLoading, refetch } = useGetAgentDashboardQuery({
+    filter,
+    page,
+    limit: 10,
+  });
 
   // ALWAYS called
   useEffect(() => {
@@ -33,8 +36,12 @@ function AgentDashboard() {
     return () => window.removeEventListener("focus", onFocus);
   }, [refetch]);
 
-  // ALWAYS called
-  const isLowBalance = data?.data?.walletBalance === 0;
+  const dashboard = data?.data;
+  const transactions = dashboard?.recentTransactions?.data ?? [];
+  const meta = dashboard?.recentTransactions?.meta;
+
+ 
+  const isLowBalance = dashboard?.walletBalance === 0;
 
   useEffect(() => {
     if (isLowBalance) {
@@ -44,11 +51,9 @@ function AgentDashboard() {
 
   if (isLoading) return <GlobalSkeleton />;
 
-  if (!data?.data) {
+  if (!dashboard) {
     return <p className="text-center text-muted-foreground">No data Found</p>;
   }
-
-  const dashboard = data.data;
 
   return (
     <div className="space-y-6">
@@ -101,12 +106,14 @@ function AgentDashboard() {
       {/* Filters + Export */}
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
-          {(["daily", "monthly"] as FilterType[]).map((f) => (
+          {(["daily", "monthly", "all"] as FilterType[]).map((f) => (
             <Button
               key={f}
               size="sm"
               variant={filter === f ? "default" : "outline"}
-              onClick={() => setFilter(f)}
+              onClick={() => {
+                setFilter(f);
+              }}
             >
               {f.toUpperCase()}
             </Button>
@@ -116,7 +123,8 @@ function AgentDashboard() {
         <Button
           size="sm"
           variant="outline"
-          onClick={() => exportTransactionsCSV(dashboard.recentTransactions)}
+          disabled={transactions.length === 0}
+          onClick={() => exportTransactionsCSV(transactions)}
         >
           <Download size={16} className="mr-2" />
           Export CSV
@@ -130,13 +138,13 @@ function AgentDashboard() {
         </CardHeader>
 
         <CardContent className="space-y-3">
-          {dashboard.recentTransactions.length === 0 && (
+          {transactions.length === 0 && (
             <p className="text-sm text-muted-foreground">
               No recent transactions
             </p>
           )}
 
-          {dashboard.recentTransactions.map((tx) => {
+          {transactions.map((tx) => {
             const meta = getTransactionMeta(tx.type);
             const Icon = meta.icon;
 
@@ -159,6 +167,7 @@ function AgentDashboard() {
                   <p className={`font-semibold ${meta.color}`}>
                     $ {formatAmount(tx.amount)}
                   </p>
+
                   {tx.commission && (
                     <p className="text-xs text-muted-foreground">
                       Commission: $ {formatAmount(tx.commission)}
@@ -168,6 +177,33 @@ function AgentDashboard() {
               </div>
             );
           })}
+
+          {/* Pagination */}
+          {meta && meta.totalPages > 1 && (
+            <div className="flex items-center justify-between pt-4">
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={page === 1}
+                onClick={() => setPage((p) => p - 1)}
+              >
+                Previous
+              </Button>
+
+              <span className="text-sm text-muted-foreground">
+                Page {meta.page} of {meta.totalPages}
+              </span>
+
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={page >= meta.totalPages}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

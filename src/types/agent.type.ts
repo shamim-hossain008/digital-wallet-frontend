@@ -1,3 +1,13 @@
+export interface PaginatedResponse<T> {
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  data: T[];
+}
+
 export type AgentTransaction = {
   _id?: string;
   type: "CASH_IN" | "CASH_OUT";
@@ -11,5 +21,5 @@ export type AgentDashboardData = {
   totalCashIns: number;
   totalCashOuts: number;
   commissionEarned: number;
-  recentTransactions: AgentTransaction[];
+  recentTransactions: PaginatedResponse<AgentTransaction>;
 };
