@@ -25,6 +25,12 @@ export type { AgentDashboardData, AgentTransaction } from "./agent.type";
 
 export type { PaginatedResponse, PaginationMeta } from "./pagination.type";
 
+export type {
+  AdminAgentStatus,
+  AdminDashboardStats,
+  AdminUserStatus,
+} from "./admin.type";
+
 // Generic API Response Wrapper
 
 export interface IResponse<T> {

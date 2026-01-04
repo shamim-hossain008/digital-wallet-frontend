@@ -109,8 +109,8 @@ export function RegisterForm({
     };
 
     try {
-      const result = await register(userInfo).unwrap();
-      console.log("result:", result);
+      await register(userInfo).unwrap();
+
       toast.success("User created successfully");
       navigate("/login");
     } catch (error) {

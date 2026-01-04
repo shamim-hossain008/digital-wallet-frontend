@@ -7,12 +7,6 @@ import type {
 } from "@/types";
 import type { ApiWrapper, IUserInfoData } from "@/types/auth.type";
 
-// type UpdateAgentProfilePayload = {
-//   name?: string;
-//   phone?: string;
-//   picture?: string;
-// };
-
 export const agentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // agent dashboard

@@ -3,6 +3,7 @@ import { role } from "@/constants/role";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 import ProfileManagement from "@/pages/dashboard/user/ProfileManagement";
+import Unauthorized from "@/pages/Unauthorized";
 import type { TRole } from "@/types";
 import { generateRoutes } from "@/utils/generateRoutes";
 import { withAuth } from "@/utils/withAuth";
@@ -77,6 +78,10 @@ export const router = createBrowserRouter([
         element: <ProfileManagement />,
       },
     ],
+  },
+  {
+    path: "/unauthorized",
+    element: <Unauthorized />,
   },
 
   {

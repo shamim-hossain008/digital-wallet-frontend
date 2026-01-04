@@ -43,7 +43,7 @@ export interface IUserInfoData {
   phone?: string;
   picture?: string;
 
-  isActive?: "ACTIVE" | "INACTIVE";
+  isActive?: "ACTIVE" | "INACTIVE" | "BLOCKED";
   isVerified?: boolean;
   isSuspended?: boolean;
   isApproved?: boolean;
