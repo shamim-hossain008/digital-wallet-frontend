@@ -1,9 +1,10 @@
 import { baseApi } from "@/redux/baseApi";
 import type {
   IResponse,
-  ITransaction,
+  ITransactionFilter,
+  ITransactionListData,
   IUserInfoData,
-  PaginatedResponse,
+  PaginationMeta,
 } from "../../../types/index";
 
 export const adminApi = baseApi.injectEndpoints({
@@ -27,7 +28,7 @@ export const adminApi = baseApi.injectEndpoints({
 
     // users management
     getAllUsers: builder.query<
-      IResponse<PaginatedResponse<IUserInfoData>>,
+      { data: IUserInfoData[]; meta: PaginationMeta },
       {
         page?: number;
         limit?: number;
@@ -36,7 +37,7 @@ export const adminApi = baseApi.injectEndpoints({
       }
     >({
       query: (params) => ({
-        url: "/admin/users",
+        url: "/user/all-users",
         method: "GET",
         params,
       }),
@@ -57,7 +58,7 @@ export const adminApi = baseApi.injectEndpoints({
 
     // Agent
     getAllAgents: builder.query<
-      IResponse<PaginatedResponse<IUserInfoData>>,
+      IResponse<IResponse<IUserInfoData>>,
       {
         page?: number;
         limit?: number;
@@ -95,21 +96,11 @@ export const adminApi = baseApi.injectEndpoints({
 
     // Transactions
     getAllTransactions: builder.query<
-      IResponse<PaginatedResponse<ITransaction>>,
-      {
-        page?: number;
-        limit?: number;
-        search?: string;
-        type?: string;
-        status?: string;
-        minAmount?: number;
-        maxAmount?: number;
-        startDate?: string;
-        endDate?: string;
-      }
+      IResponse<ITransactionListData>,
+      ITransactionFilter
     >({
       query: (params) => ({
-        url: "/admin/transactions",
+        url: "/transactions/all",
         method: "GET",
         params,
       }),

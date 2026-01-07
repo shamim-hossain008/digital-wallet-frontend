@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 export interface ITransactionPayLoad {
   amount: number;
   pin?: string;
@@ -10,7 +8,10 @@ export interface ITransactionFilter {
   page?: number;
   limit?: number;
   type?: string;
+  status?: string;
   range?: string;
+  minAmount?: number;
+  maxAmount?: number;
   search?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
@@ -19,11 +20,19 @@ export interface ITransactionFilter {
 export interface ITransaction {
   _id: string;
   amount: number;
-  type: "DEPOSIT" | "WITHDRAW" | "TRANSFER";
+  type: "DEPOSIT" | "WITHDRAW" | "TRANSFER" | "CASH_IN" | "CASH_OUT";
   status: "COMPLETED" | "PENDING" | "FAILED";
   timestamp: string;
-  sender?: any;
-  receiver?: any;
+  sender?: {
+    _id: string;
+    email: string;
+    role: string;
+  };
+  receiver?: {
+    _id: string;
+    email: string;
+    role: string;
+  };
 }
 
 export interface ITransactionListData {
@@ -31,5 +40,5 @@ export interface ITransactionListData {
   page: number;
   limit: number;
   total: number;
-  totalPages: number;
+  totalPages?: number;
 }

@@ -1,6 +1,7 @@
 import type { role } from "@/constants/role";
 import type { ComponentType } from "react";
 import type { ILoginData, IUserInfoData } from "./auth.type";
+import type { PaginationMeta } from "./pagination.type";
 
 export type {
   ILoginData,
@@ -23,7 +24,7 @@ export type {
 
 export type { AgentDashboardData, AgentTransaction } from "./agent.type";
 
-export type { PaginatedResponse, PaginationMeta } from "./pagination.type";
+export type {  PaginationMeta } from "./pagination.type";
 
 export type {
   AdminAgentStatus,
@@ -38,6 +39,7 @@ export interface IResponse<T> {
   success: boolean;
   message?: string;
   data: T;
+  meta?:PaginationMeta
 }
 
 // Union type for Login + UserInfo API
