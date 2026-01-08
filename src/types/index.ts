@@ -22,9 +22,14 @@ export type {
   ITransactionPayLoad,
 } from "./transaction.type";
 
-export type { AgentDashboardData, AgentTransaction } from "./agent.type";
+export type {
+  AgentDashboardData,
+  AgentStatus,
+  AgentTransaction,
+  IAgent,
+} from "./agent.type";
 
-export type {  PaginationMeta } from "./pagination.type";
+export type { PaginationMeta } from "./pagination.type";
 
 export type {
   AdminAgentStatus,
@@ -39,7 +44,7 @@ export interface IResponse<T> {
   success: boolean;
   message?: string;
   data: T;
-  meta?:PaginationMeta
+  meta?: PaginationMeta;
 }
 
 // Union type for Login + UserInfo API

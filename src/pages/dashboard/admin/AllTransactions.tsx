@@ -1,10 +1,13 @@
+import Pagination from "@/components/common/Pagination";
 import { GlobalSkeleton } from "@/components/loading/GlobalSkeleton";
+import AmountRangeSlider from "@/components/transactions/AmountRangeSlider";
+import TransactionDetailsModal from "@/components/transactions/TransactionDetailsModal";
 import TransactionFilters from "@/components/transactions/TransactionFilters";
-import TransactionPagination from "@/components/transactions/TransactionPagination";
 import TransactionRow from "@/components/transactions/TransactionRow";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import useDebouncedValue from "@/hooks/useDebouncedValue";
 import { useGetAllTransactionsQuery } from "@/redux/features/Admin-api/admin.api";
+import type { ITransaction } from "@/types";
 import { exportTransactionsCSV } from "@/utils/exportTransactionsCSV";
 import { useState } from "react";
 
@@ -17,6 +20,10 @@ function AllTransactions() {
   const [type, setType] = useState("");
   const [status, setStatus] = useState("");
 
+  const [amountRange, setAmountRange] = useState<[number, number]>([0, 5000]);
+
+  const [selectedTx, setSelectedTx] = useState<ITransaction | null>(null);
+
   const [minAmount, setMinAmount] = useState<number | undefined>(undefined);
   const [maxAmount, setMaxAmount] = useState<number | undefined>(undefined);
 
@@ -26,17 +33,14 @@ function AllTransactions() {
     search: debouncedSearch || undefined,
     type: type || undefined,
     status: status || undefined,
-    minAmount,
-    maxAmount,
+    minAmount: amountRange[0],
+    maxAmount: amountRange[1],
   });
 
   if (isLoading) return <GlobalSkeleton />;
 
   const transactions = data?.data?.transactions ?? [];
   const meta = data?.data;
-
-  console.log("data Transaction:", transactions);
-  console.log("meta data:", meta);
 
   return (
     <div className="space-y-6">
@@ -56,17 +60,39 @@ function AllTransactions() {
         setMaxAmount={setMaxAmount}
         onExport={() => exportTransactionsCSV(transactions)}
       />
+
+      {/* Amount Slider */}
+      <Card>
+        <CardContent className="pt-6">
+          <AmountRangeSlider
+            min={0}
+            max={10000}
+            value={amountRange}
+            onChange={(v) => {
+              setAmountRange(v);
+              setPage(1);
+            }}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Table */}
       <Card>
         <CardHeader>
           <CardTitle>Transactions</CardTitle>
         </CardHeader>
+
         <CardContent className="space-y-3">
           {transactions.map((tx) => (
-            <TransactionRow key={tx._id} tx={tx} />
+            <TransactionRow
+              key={tx._id}
+              tx={tx}
+              onClick={() => setSelectedTx(tx)}
+            />
           ))}
-          {/* Pagination */}
+
           {meta && (
-            <TransactionPagination
+            <Pagination
               page={meta.page}
               limit={meta.limit}
               total={meta.total}
@@ -76,6 +102,13 @@ function AllTransactions() {
           )}
         </CardContent>
       </Card>
+
+      {/* Details Modal */}
+      <TransactionDetailsModal
+        transaction={selectedTx}
+        open={!!selectedTx}
+        onClose={() => setSelectedTx(null)}
+      />
     </div>
   );
 }

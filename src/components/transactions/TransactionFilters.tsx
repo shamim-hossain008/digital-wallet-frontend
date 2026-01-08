@@ -8,9 +8,9 @@ interface Props {
   status: string;
   setStatus: (v: string) => void;
   minAmount?: number;
-  setMinAmount: (v?: number) => void;
+  setMinAmount?: (v?: number) => void;
   maxAmount?: number;
-  setMaxAmount: (v?: number) => void;
+  setMaxAmount?: (v?: number) => void;
   onExport: () => void;
 }
 
@@ -64,26 +64,30 @@ const TransactionFilters = ({
       </select>
 
       {/* Min amount */}
-      <input
-        type="number"
-        className="border rounded px-3 py-2 dark:bg-background focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        placeholder="Min Amount"
-        value={minAmount ?? ""}
-        onChange={(e) =>
-          setMinAmount(e.target.value ? Number(e.target.value) : undefined)
-        }
-      />
+      {setMinAmount && (
+        <input
+          type="number"
+          className="border rounded px-3 py-2 dark:bg-background focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          placeholder="Min Amount"
+          value={minAmount ?? ""}
+          onChange={(e) =>
+            setMinAmount(e.target.value ? Number(e.target.value) : undefined)
+          }
+        />
+      )}
 
       {/* Max amount */}
-      <input
-        type="number"
-        className="border rounded px-3 py-2 dark:bg-background focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        placeholder="Max Amount"
-        value={maxAmount ?? ""}
-        onChange={(e) =>
-          setMaxAmount(e.target.value ? Number(e.target.value) : undefined)
-        }
-      />
+      {setMaxAmount && (
+        <input
+          type="number"
+          className="border rounded px-3 py-2 dark:bg-background focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          placeholder="Max Amount"
+          value={maxAmount ?? ""}
+          onChange={(e) =>
+            setMaxAmount(e.target.value ? Number(e.target.value) : undefined)
+          }
+        />
+      )}
 
       {/* Export button */}
       <Button

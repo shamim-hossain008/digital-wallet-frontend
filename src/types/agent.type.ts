@@ -23,3 +23,14 @@ export type AgentDashboardData = {
   commissionEarned: number;
   recentTransactions: PaginatedResponse<AgentTransaction>;
 };
+
+export type AgentStatus = "PENDING" | "ACTIVE" | "SUSPENDED";
+
+export interface IAgent {
+  _id: string;
+  name: string;
+  email: string;
+  role: "AGENT";
+  isActive: AgentStatus;
+  createdAt: string;
+}

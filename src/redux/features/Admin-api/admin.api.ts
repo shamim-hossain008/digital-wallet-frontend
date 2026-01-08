@@ -58,7 +58,10 @@ export const adminApi = baseApi.injectEndpoints({
 
     // Agent
     getAllAgents: builder.query<
-      IResponse<IResponse<IUserInfoData>>,
+      {
+        data: IUserInfoData[];
+        meta: PaginationMeta;
+      },
       {
         page?: number;
         limit?: number;

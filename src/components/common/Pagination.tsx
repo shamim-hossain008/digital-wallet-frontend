@@ -2,21 +2,22 @@ import { Button } from "../ui/button";
 
 interface Props {
   page: number;
-  total: number;
   limit: number;
+  total: number;
   onPrev: () => void;
   onNext: () => void;
 }
-function TransactionPagination({ page, total, limit, onPrev, onNext }: Props) {
+
+function Pagination({ page, limit, total, onPrev, onNext }: Props) {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="flex justify-between items-center pt-4">
-      <Button variant="outline" disabled={page == 1} onClick={onPrev}>
-        Previous
+    <div className="flex justify-between pt-4">
+      <Button variant="outline" disabled={page === 1} onClick={onPrev}>
+        Prev
       </Button>
       <span>
-        Page {page} / {totalPages}
+        Page{page}/{totalPages}
       </span>
 
       <Button
@@ -30,4 +31,4 @@ function TransactionPagination({ page, total, limit, onPrev, onNext }: Props) {
   );
 }
 
-export default TransactionPagination;
+export default Pagination;
