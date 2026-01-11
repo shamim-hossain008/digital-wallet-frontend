@@ -22,14 +22,11 @@ export type {
   ITransactionPayLoad,
 } from "./transaction.type";
 
-export type {
-  AgentDashboardData,
-  AgentStatus,
-  AgentTransaction,
-  IAgent,
-} from "./agent.type";
+export type { AgentDashboardData, AgentTransaction } from "./agent.type";
 
 export type { PaginationMeta } from "./pagination.type";
+
+export type { ICommission, ICommissionResponse } from "./commission.type";
 
 export type {
   AdminAgentStatus,

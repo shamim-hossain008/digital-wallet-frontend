@@ -7,7 +7,9 @@ const AdminDashboard = lazy(
 
 const AllUsers = lazy(() => import("@/pages/dashboard/admin/AllUsers"));
 const Summary = lazy(() => import("@/pages/dashboard/admin/Summary"));
-const AllWallets = lazy(() => import("@/pages/dashboard/admin/AllWallets"));
+const AgentManagement = lazy(
+  () => import("@/pages/dashboard/admin/AgentManagement")
+);
 const CommissionPayouts = lazy(
   () => import("@/pages/dashboard/admin/CommissionPayouts")
 );
@@ -36,12 +38,12 @@ export const adminSidebarItems: ISidebarItem[] = [
     ],
   },
   {
-    title: "Wallet Management",
+    title: "Agent Management",
     items: [
       {
-        title: "All Wallets",
+        title: "All Agents",
         url: "/admin/all-wallets",
-        component: AllWallets,
+        component: AgentManagement,
       },
     ],
   },

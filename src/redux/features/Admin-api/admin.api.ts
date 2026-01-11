@@ -1,5 +1,8 @@
 import { baseApi } from "@/redux/baseApi";
+
 import type {
+  AdminAgentStatus,
+  ICommissionResponse,
   IResponse,
   ITransactionFilter,
   ITransactionListData,
@@ -66,11 +69,11 @@ export const adminApi = baseApi.injectEndpoints({
         page?: number;
         limit?: number;
         search?: string;
-        status?: "active" | "block" | "pending";
+        status?: AdminAgentStatus;
       }
     >({
       query: (params) => ({
-        url: "/admin/agents",
+        url: "/admin/all-agents",
         method: "GET",
         params,
       }),
@@ -146,6 +149,35 @@ export const adminApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Admin"],
     }),
+
+    // get all commissions
+    getAllCommissions: builder.query<
+      IResponse<ICommissionResponse>,
+      {
+        page?: number;
+        limit?: number;
+        fromDate?: string;
+        toDate?: string;
+        status?: string;
+        search?: string;
+        paid?: boolean;
+      }
+    >({
+      query: (params) => ({
+        url: "/admin/commission-payouts",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["Commission"],
+    }),
+
+    markCommissionPaid: builder.mutation({
+      query: ({ commissionId }) => ({
+        url: `admin/commissions/${commissionId}/pay`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Commission"],
+    }),
   }),
 });
 
@@ -160,4 +192,6 @@ export const {
   useUpdateSystemConfigMutation,
   useGetAdminProfileQuery,
   useUpdateAdminProfileMutation,
+  useGetAllCommissionsQuery,
+  useMarkCommissionPaidMutation,
 } = adminApi;

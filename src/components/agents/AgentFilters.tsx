@@ -1,8 +1,10 @@
+import type { AdminAgentStatus } from "@/types";
+
 interface Props {
   search: string;
   setSearch: (v: string) => void;
-  status: string;
-  setStatus: (v: string) => void;
+  status: AdminAgentStatus | "";
+  setStatus: (v: AdminAgentStatus | "") => void;
 }
 
 function AgentFilters({ search, setSearch, status, setStatus }: Props) {
@@ -18,7 +20,7 @@ function AgentFilters({ search, setSearch, status, setStatus }: Props) {
       <select
         className="border rounded px-3 py-2 dark:bg-background"
         value={status}
-        onChange={(e) => setStatus(e.target.value)}
+        onChange={(e) => setStatus(e.target.value as AdminAgentStatus)}
       >
         <option value="">All</option>
         <option value="active">Active</option>
