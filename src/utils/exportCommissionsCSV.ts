@@ -1,26 +1,31 @@
 import type { ICommission } from "@/types";
 
-
-
-
 export function exportCommissionsCSV(data: ICommission[]) {
-  const header = ["Agent Name", "Agent Email", "Amount", "Status", "Date"];
+  const header = [
+    "Agent Name",
+    "Agent Email",
+    "Total Commission",
+    "Transactions",
+    "Status",
+  ];
 
   const rows = data.map((c) => [
-    c.agentName,
-    c.agentEmail,
-    c.amount,
+    c.name,
+    c.email,
+    c.totalCommission,
+    c.transactionCount,
     c.isPaid ? "PAID" : "UNPAID",
-    new Date(c.createdAt).toLocaleDateString(),
   ]);
 
-  const csv = [header, ...rows].map((r) => r.join(",")).join("\n");
+  const csv = [header, ...rows].map((row) => row.join(",")).join("\n");
 
-  const blob = new Blob([csv], { type: "text/csv" });
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
 
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "commissions.csv";
-  a.click();
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "commission_payouts.csv";
+  link.click();
+
+  URL.revokeObjectURL(url);
 }

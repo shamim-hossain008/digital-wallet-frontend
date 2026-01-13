@@ -6,13 +6,14 @@ import Pagination from "@/components/common/Pagination";
 import { GlobalSkeleton } from "@/components/loading/GlobalSkeleton";
 import {
   useGetAllCommissionsQuery,
-  useMarkCommissionPaidMutation,
+  usePayCommissionMutation,
 } from "@/redux/features/Admin-api/admin.api";
 import { exportCommissionsCSV } from "@/utils/exportCommissionsCSV";
 import { useState } from "react";
 
 function CommissionPayouts() {
   const [page, setPage] = useState(1);
+
   const [search, setSearch] = useState("");
   const [paid, setPaid] = useState("");
 
@@ -22,13 +23,12 @@ function CommissionPayouts() {
   const { data, isLoading } = useGetAllCommissionsQuery({
     page,
     limit: 10,
-    search: search || undefined,
-    paid: paid ? paid === "true" : undefined,
+    status: paid || undefined,
   });
 
-  const [markPaid, { isLoading: paying }] = useMarkCommissionPaidMutation();
+  const [payCommission, { isLoading: paying }] = usePayCommissionMutation();
 
-  console.log("mark Paid:", markPaid);
+  console.log("mark Paid:", payCommission);
   console.log("Commission data:", data);
 
   if (isLoading) return <GlobalSkeleton />;
@@ -44,7 +44,7 @@ function CommissionPayouts() {
   const handleConfirmPayment = async () => {
     if (!selectedCommission) return;
 
-    await markPaid({
+    await payCommission({
       agentId: selectedCommission.agentId,
       amount: selectedCommission.totalCommission,
       fromDate: selectedCommission.fromDate,
@@ -72,6 +72,7 @@ function CommissionPayouts() {
               <th className="p-3 text-left">Email</th>
               <th className="p-3 text-left">Total Commission</th>
               <th className="p-3 text-center">Transactions</th>
+              <th className="p-3 text-center">Status</th>
               <th className="p-3 text-right">Action</th>
             </tr>
           </thead>

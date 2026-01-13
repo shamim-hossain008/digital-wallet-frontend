@@ -1,18 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "@/redux/baseApi";
 
 import type {
   AdminAgentStatus,
+  ICommissionHistoryResponse,
   ICommissionResponse,
   IResponse,
   ITransactionFilter,
   ITransactionListData,
   IUserInfoData,
   PaginationMeta,
-} from "../../../types/index";
+} from "../../../types";
+
+/* ======================================================
+   ADMIN API
+====================================================== */
 
 export const adminApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // Dashboard overview
+    /* ================= DASHBOARD ================= */
+
     getAdminDashboard: builder.query<
       IResponse<{
         totalUsers: number;
@@ -29,7 +36,8 @@ export const adminApi = baseApi.injectEndpoints({
       providesTags: ["Admin"],
     }),
 
-    // users management
+    /* ================= USERS ================= */
+
     getAllUsers: builder.query<
       { data: IUserInfoData[]; meta: PaginationMeta },
       {
@@ -59,12 +67,10 @@ export const adminApi = baseApi.injectEndpoints({
       invalidatesTags: ["User"],
     }),
 
-    // Agent
+    /* ================= AGENTS ================= */
+
     getAllAgents: builder.query<
-      {
-        data: IUserInfoData[];
-        meta: PaginationMeta;
-      },
+      { data: IUserInfoData[]; meta: PaginationMeta },
       {
         page?: number;
         limit?: number;
@@ -100,7 +106,8 @@ export const adminApi = baseApi.injectEndpoints({
       invalidatesTags: ["Agent"],
     }),
 
-    // Transactions
+    /* ================= TRANSACTIONS ================= */
+
     getAllTransactions: builder.query<
       IResponse<ITransactionListData>,
       ITransactionFilter
@@ -113,7 +120,8 @@ export const adminApi = baseApi.injectEndpoints({
       providesTags: ["Transaction"],
     }),
 
-    // system config
+    /* ================= SYSTEM CONFIG ================= */
+
     updateSystemConfig: builder.mutation<
       IResponse<null>,
       {
@@ -129,7 +137,9 @@ export const adminApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Admin"],
     }),
-    // Admin Profile
+
+    /* ================= ADMIN PROFILE ================= */
+
     getAdminProfile: builder.query<IResponse<IUserInfoData>, void>({
       query: () => ({
         url: "/admin/profile",
@@ -150,7 +160,9 @@ export const adminApi = baseApi.injectEndpoints({
       invalidatesTags: ["Admin"],
     }),
 
-    // get all commissions
+    /* ================= COMMISSION SUMMARY ================= */
+    // Calculated from transactions
+
     getAllCommissions: builder.query<
       IResponse<ICommissionResponse>,
       {
@@ -159,8 +171,6 @@ export const adminApi = baseApi.injectEndpoints({
         fromDate?: string;
         toDate?: string;
         status?: string;
-        search?: string;
-        paid?: boolean;
       }
     >({
       query: (params) => ({
@@ -171,27 +181,62 @@ export const adminApi = baseApi.injectEndpoints({
       providesTags: ["Commission"],
     }),
 
-    markCommissionPaid: builder.mutation({
-      query: ({ commissionId }) => ({
-        url: `admin/commissions/${commissionId}/pay`,
-        method: "PATCH",
+    /* ================= PAY COMMISSION (STEP 6.1) ================= */
+
+    payCommission: builder.mutation<
+      IResponse<any>,
+      {
+        agentId: string;
+        amount: number;
+        fromDate?: string;
+        toDate?: string;
+      }
+    >({
+      query: (data) => ({
+        url: "/admin/commission-payouts/pay",
+        method: "POST",
+        data,
       }),
-      invalidatesTags: ["Commission"],
+      invalidatesTags: ["Commission", "CommissionHistory"],
+    }),
+
+    /* ================= COMMISSION HISTORY ================= */
+
+    getCommissionHistory: builder.query<
+      IResponse<ICommissionHistoryResponse>,
+      { page: number; limit: number }
+    >({
+      query: ({ page, limit }) => ({
+        url: "/admin/commission-history",
+        method: "GET",
+        params: { page, limit },
+      }),
+      providesTags: ["CommissionHistory"],
     }),
   }),
 });
 
+/* ================= EXPORT HOOKS ================= */
+
 export const {
   useGetAdminDashboardQuery,
+
   useGetAllUsersQuery,
   useToggleUserBlockMutation,
+
   useGetAllAgentsQuery,
   useApproveAgentMutation,
   useSuspendAgentMutation,
+
   useGetAllTransactionsQuery,
+
   useUpdateSystemConfigMutation,
+
   useGetAdminProfileQuery,
   useUpdateAdminProfileMutation,
+
   useGetAllCommissionsQuery,
-  useMarkCommissionPaidMutation,
+  usePayCommissionMutation,
+
+  useGetCommissionHistoryQuery,
 } = adminApi;

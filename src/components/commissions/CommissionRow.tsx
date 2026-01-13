@@ -24,12 +24,13 @@ function CommissionRow({ commission, onPay }: Props) {
       <td className="p-4 text-left font-semibold text-indigo-600">
         ${commission.totalCommission.toFixed(2)}
       </td>
-      <td>
+      {/* Transaction Count */}
+      <td className="p-3 text-center">{commission.transactionCount}</td>
+
+      <td className="p-3 text-center">
         <CommissionStatusBadge isPaid={isPaid} />
       </td>
 
-      {/* Transaction Count */}
-      <td className="p-3 text-center">{commission.transactionCount}</td>
 
       {/* Action */}
       <td className="p-3 text-right">

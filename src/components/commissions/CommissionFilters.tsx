@@ -36,7 +36,7 @@ function CommissionFilters({
 
       <Button
         onClick={onExport}
-        className="border px-4 py-2 rounded text-muted-foreground"
+        className="border px-4 py-2 rounded text-white"
       >
         Export CSV
       </Button>

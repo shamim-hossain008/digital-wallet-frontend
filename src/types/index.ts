@@ -26,7 +26,12 @@ export type { AgentDashboardData, AgentTransaction } from "./agent.type";
 
 export type { PaginationMeta } from "./pagination.type";
 
-export type { ICommission, ICommissionResponse } from "./commission.type";
+export type {
+  ICommission,
+  ICommissionHistory,
+  ICommissionHistoryResponse,
+  ICommissionResponse,
+} from "./commission.type";
 
 export type {
   AdminAgentStatus,
