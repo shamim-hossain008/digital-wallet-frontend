@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import CommissionFilters from "@/components/commissions/CommissionFilters";
 import CommissionRow from "@/components/commissions/CommissionRow";
 import ConfirmCommissionModal from "@/components/commissions/ConfirmCommissionModal";
 import Pagination from "@/components/common/Pagination";
@@ -8,14 +7,14 @@ import {
   useGetAllCommissionsQuery,
   usePayCommissionMutation,
 } from "@/redux/features/Admin-api/admin.api";
-import { exportCommissionsCSV } from "@/utils/exportCommissionsCSV";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 function CommissionPayouts() {
   const [page, setPage] = useState(1);
 
-  const [search, setSearch] = useState("");
-  const [paid, setPaid] = useState("");
+  const navigate = useNavigate();
 
   // Modal state
   const [selectedCommission, setSelectedCommission] = useState<any>(null);
@@ -23,13 +22,9 @@ function CommissionPayouts() {
   const { data, isLoading } = useGetAllCommissionsQuery({
     page,
     limit: 10,
-    status: paid || undefined,
   });
 
   const [payCommission, { isLoading: paying }] = usePayCommissionMutation();
-
-  console.log("mark Paid:", payCommission);
-  console.log("Commission data:", data);
 
   if (isLoading) return <GlobalSkeleton />;
 
@@ -44,25 +39,30 @@ function CommissionPayouts() {
   const handleConfirmPayment = async () => {
     if (!selectedCommission) return;
 
-    await payCommission({
-      agentId: selectedCommission.agentId,
-      amount: selectedCommission.totalCommission,
-      fromDate: selectedCommission.fromDate,
-      toDate: selectedCommission.toDate,
-    }).unwrap();
-    setSelectedCommission(null);
+    try {
+      await payCommission({
+        agentId: selectedCommission.agentId,
+        amount: selectedCommission.totalCommission,
+        fromDate: selectedCommission.fromDate,
+        toDate: selectedCommission.toDate,
+      }).unwrap();
+
+      toast.success("Commission Paid", {
+        description: "The commission payout was completed successfully.",
+      });
+
+      setSelectedCommission(null);
+
+      navigate("/admin/commission-history");
+    } catch {
+      toast.error("Payment Failed", {
+        description: "Unable to process commission payout",
+      });
+    }
   };
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Commission Payouts</h1>
-
-      <CommissionFilters
-        search={search}
-        setSearch={setSearch}
-        paid={paid}
-        setPaid={setPaid}
-        onExport={() => exportCommissionsCSV(commissions)}
-      />
 
       <div className="bg-card rounded shadow overflow-x-auto">
         <table className="w-full text-sm">

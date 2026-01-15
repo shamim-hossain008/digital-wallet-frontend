@@ -3,6 +3,7 @@ import { baseApi } from "@/redux/baseApi";
 
 import type {
   AdminAgentStatus,
+  AdminDashboardStats,
   ICommissionHistoryResponse,
   ICommissionResponse,
   IResponse,
@@ -20,15 +21,7 @@ export const adminApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     /* ================= DASHBOARD ================= */
 
-    getAdminDashboard: builder.query<
-      IResponse<{
-        totalUsers: number;
-        totalAgents: number;
-        totalTransactions: number;
-        totalVolume: number;
-      }>,
-      void
-    >({
+    getAdminDashboard: builder.query<IResponse<AdminDashboardStats>, void>({
       query: () => ({
         url: "/admin/dashboard",
         method: "GET",

@@ -32,11 +32,11 @@ function CommissionHistory() {
           <thead className="bg-muted">
             <tr>
               <th className="p-3 text-left">Agent</th>
-              <th>Email</th>
-              <th>Amount</th>
-              <th>Paid At</th>
-              <th>Paid By</th>
-              <th>Status</th>
+              <th className="p-3 text-left">Email</th>
+              <th className="p-3 text-left">Amount</th>
+              <th className="p-3 text-left">Paid At</th>
+              <th className="p-3 text-left">Paid By</th>
+              <th className="p-3 text-center">Status</th>
             </tr>
           </thead>
 

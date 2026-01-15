@@ -7,7 +7,7 @@ function StatCard({
   icon,
 }: {
   title: string;
-  value?: number | string;
+  value?: React.ReactNode;
   icon: React.ReactNode;
 }) {
   return (
@@ -16,7 +16,7 @@ function StatCard({
         <CardContent className="flex items-center justify-between  p-5">
           <div>
             <p className="text-sm text-muted-foreground">{title}</p>
-            <p className="text-xl font-bold">{value}</p>
+            <p className="text-xl font-extrabold">{value}</p>
           </div>
           <div className="p-3 rounded-full bg-muted">{icon}</div>
         </CardContent>

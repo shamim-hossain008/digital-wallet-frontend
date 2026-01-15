@@ -4,7 +4,7 @@ import CommissionStatusBadge from "./CommissionStatusBadge";
 
 interface Props {
   commission: ICommission;
-  onPay?: () => void;
+  onPay: () => void;
 }
 
 function CommissionRow({ commission, onPay }: Props) {

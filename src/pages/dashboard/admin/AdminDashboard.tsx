@@ -1,12 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AgentDashboardSectionSkeleton } from "@/components/loading/AgentDashboardSectionSkeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGetAdminDashboardQuery } from "@/redux/features/Admin-api/admin.api";
 import { motion } from "framer-motion";
 import { ArrowLeftRight, DollarSign, UserCog, Users } from "lucide-react";
+import CountUp from "react-countup";
 import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   Line,
   LineChart,
   Pie,
@@ -18,40 +21,12 @@ import {
 } from "recharts";
 import StatCard from "./admin-card/StatCard";
 
-/* ------------------ MOCK CHART DATA (can be replaced later) ------------------ */
-
-const transactionTrend = [
-  { name: "Mon", count: 120 },
-  { name: "Tue", count: 180 },
-  { name: "Wed", count: 90 },
-  { name: "Thu", count: 220 },
-  { name: "Fri", count: 160 },
-  { name: "Sat", count: 80 },
-  { name: "Sun", count: 140 },
-];
-
-const volumeData = [
-  { name: "Deposit", value: 5000 },
-  { name: "Withdraw", value: 3000 },
-  { name: "Transfer", value: 2000 },
-];
-
-const statusData = [
-  { name: "Completed", value: 70 },
-  { name: "Pending", value: 20 },
-  { name: "Failed", value: 10 },
-];
-
-/* --------------------------------------------------------------------------- */
-
 function AdminDashboard() {
   const { data, isLoading } = useGetAdminDashboardQuery();
 
   if (isLoading) return <AgentDashboardSectionSkeleton />;
 
   const dashboard = data?.data;
-
-  console.log("Admin dashboard data:", dashboard)
 
   if (!dashboard) {
     return (
@@ -60,6 +35,17 @@ function AdminDashboard() {
       </p>
     );
   }
+
+  const transactionTrend = dashboard.transactionTrend ?? [];
+  const volumeData = dashboard.volumeData ?? [];
+  const statusData = dashboard.statusData ?? [];
+
+  // Colors for status chart
+  const statusColors: Record<string, string> = {
+    Completed: "#22c55e",
+    Pending: "#eab308",
+    Failed: "#ef4444",
+  };
 
   return (
     <div className="space-y-6">
@@ -77,22 +63,33 @@ function AdminDashboard() {
         <StatCard
           title="Total Users"
           value={dashboard.totalUsers}
-          icon={<Users className="text-blue-600" />}
+          icon={<Users className="text-blue-600 dark:text-blue-400" />}
         />
         <StatCard
           title="Total Agents"
           value={dashboard.totalAgents}
-          icon={<UserCog className="text-purple-600" />}
+          icon={<UserCog className="text-purple-600 dark:text-purple-400" />}
         />
         <StatCard
           title="Transactions"
           value={dashboard.totalTransactions}
-          icon={<ArrowLeftRight className="text-green-600" />}
+          icon={
+            <ArrowLeftRight className="text-green-600 dark:text-green-400" />
+          }
         />
         <StatCard
           title="Total Volume"
-          value={`$${dashboard.totalVolume}`}
-          icon={<DollarSign className="text-orange-600" />}
+          value={
+            <CountUp
+              start={0}
+              end={dashboard.totalVolume}
+              duration={2}
+              separator=","
+              decimals={2}
+              prefix="$"
+            />
+          }
+          icon={<DollarSign className="text-orange-600 dark:text-orange-400" />}
         />
       </div>
 
@@ -103,8 +100,8 @@ function AdminDashboard() {
           <CardHeader>
             <CardTitle>Transaction Trend</CardTitle>
           </CardHeader>
-          <CardContent className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
+          <CardContent className="w-full">
+            <ResponsiveContainer width="100%" aspect={2}>
               <LineChart data={transactionTrend}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
@@ -126,8 +123,8 @@ function AdminDashboard() {
           <CardHeader>
             <CardTitle>Volume Breakdown</CardTitle>
           </CardHeader>
-          <CardContent className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
+          <CardContent className="w-full">
+            <ResponsiveContainer width="100%" aspect={2}>
               <BarChart data={volumeData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
@@ -145,8 +142,8 @@ function AdminDashboard() {
         <CardHeader>
           <CardTitle>Transaction Status Distribution</CardTitle>
         </CardHeader>
-        <CardContent className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
+        <CardContent className="w-full">
+          <ResponsiveContainer width="100%" aspect={2}>
             <PieChart>
               <Tooltip />
               <Pie
@@ -154,9 +151,15 @@ function AdminDashboard() {
                 dataKey="value"
                 nameKey="name"
                 outerRadius={100}
-                fill="#6366f1"
                 label
-              />
+              >
+                {statusData.map((entry: any, index: number) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={statusColors[entry.name] || "#6366f1"}
+                  />
+                ))}
+              </Pie>
             </PieChart>
           </ResponsiveContainer>
         </CardContent>
