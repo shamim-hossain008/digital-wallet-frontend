@@ -13,10 +13,6 @@ import type {
   PaginationMeta,
 } from "../../../types";
 
-/* ======================================================
-   ADMIN API
-====================================================== */
-
 export const adminApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     /* ================= DASHBOARD ================= */
@@ -27,6 +23,13 @@ export const adminApi = baseApi.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["Admin"],
+    }),
+
+    getAdminSummary: builder.query<any, void>({
+      query: () => ({
+        url: "/admin/summary",
+        method: "GET",
+      }),
     }),
 
     /* ================= USERS ================= */
@@ -213,7 +216,7 @@ export const adminApi = baseApi.injectEndpoints({
 
 export const {
   useGetAdminDashboardQuery,
-
+  useGetAdminSummaryQuery,
   useGetAllUsersQuery,
   useToggleUserBlockMutation,
 
