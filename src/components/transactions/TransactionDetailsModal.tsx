@@ -6,9 +6,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { typeIcon } from "@/utils/transactionUI";
+import { DialogDescription } from "@radix-ui/react-dialog";
 import { motion } from "framer-motion";
 import TransactionStatusBadge from "./TransactionStatusBadge";
-import { typeIcon } from "@/utils/transactionUI";
 
 interface Props {
   transaction: ITransaction | null;
@@ -24,6 +25,9 @@ function TransactionDetailsModal({ transaction, open, onClose }: Props) {
       <DialogContent className="max-w-md dark:bg-background">
         <DialogHeader>
           <DialogTitle>Transaction Details</DialogTitle>
+          <DialogDescription className="sr-only">
+            Detailed information about the selected transaction.{" "}
+          </DialogDescription>
         </DialogHeader>
 
         <motion.div

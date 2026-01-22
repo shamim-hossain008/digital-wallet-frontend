@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 
-import { useCashInMutation } from "@/redux/features/agent  api/agent.api";
+import { useCashInMutation } from "@/redux/features/agent-api/agent.api";
 
 function AddMoney() {
   const [identifier, setIdentifier] = useState("");

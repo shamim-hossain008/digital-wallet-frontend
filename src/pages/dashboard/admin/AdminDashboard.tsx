@@ -100,13 +100,12 @@ function AdminDashboard() {
           <CardHeader>
             <CardTitle>Transaction Trend</CardTitle>
           </CardHeader>
-          <CardContent className="w-full">
-            <ResponsiveContainer width="100%" aspect={2}>
+          <CardContent className="w-full h-80">
+            <ResponsiveContainer width="100%" height="100%">
               <LineChart data={transactionTrend}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
+                <YAxis /> <Tooltip />
                 <Line
                   type="monotone"
                   dataKey="count"
@@ -123,8 +122,8 @@ function AdminDashboard() {
           <CardHeader>
             <CardTitle>Volume Breakdown</CardTitle>
           </CardHeader>
-          <CardContent className="w-full">
-            <ResponsiveContainer width="100%" aspect={2}>
+          <CardContent className="w-full h-80">
+            <ResponsiveContainer width="100%" height="100%" aspect={2}>
               <BarChart data={volumeData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />

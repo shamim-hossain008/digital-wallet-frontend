@@ -2,14 +2,14 @@ import type { ISidebarItem } from "@/types";
 import { lazy } from "react";
 
 const AgentDashboard = lazy(
-  () => import("@/pages/dashboard/agent/AgentDashboard")
+  () => import("@/pages/dashboard/agent/AgentDashboard"),
 );
 const AddMoney = lazy(() => import("@/pages/dashboard/agent/AddMoney"));
 const WithdrawMoney = lazy(
-  () => import("@/pages/dashboard/agent/WithdrawMoney")
+  () => import("@/pages/dashboard/agent/WithdrawMoney"),
 );
 const AgentTransactions = lazy(
-  () => import("@/pages/dashboard/agent/AgentTransactions")
+  () => import("@/pages/dashboard/agent/AgentTransactions"),
 );
 
 const AgentProfile = lazy(() => import("@/pages/dashboard/agent/AgentProfile"));
@@ -31,6 +31,11 @@ export const agentSidebarItems: ISidebarItem[] = [
         url: "/agent/transaction",
         component: AgentTransactions,
       },
+    ],
+  },
+  {
+    title: "Settings",
+    items: [
       {
         title: "My Profile",
         url: "/agent/profile",

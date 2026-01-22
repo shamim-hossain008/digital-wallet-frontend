@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "@/redux/baseApi";
 import type {
   AgentDashboardData,
   AgentTransaction,
   FilterType,
-  PaginatedResponse,
+  IResponse,
 } from "@/types";
+import type { PaginatedResponse } from "@/types/agent.type";
 import type { ApiWrapper, IUserInfoData } from "@/types/auth.type";
 
 export const agentApi = baseApi.injectEndpoints({
@@ -86,7 +88,14 @@ export const agentApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Agent"],
     }),
-
+    // Delete Profile Picture
+    removeAgentPicture: builder.mutation<IResponse<any>, void>({
+      query: () => ({
+        url: "/agent/profile/picture",
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Agent"],
+    }),
     // change password
     changeAgentPassword: builder.mutation<
       ApiWrapper<null>,
@@ -104,6 +113,7 @@ export const agentApi = baseApi.injectEndpoints({
 export const {
   useGetAgentDashboardQuery,
   useGetAgentTransactionsQuery,
+  useRemoveAgentPictureMutation,
   useCashInMutation,
   useCashOutMutation,
   useGetAgentProfileQuery,

@@ -13,13 +13,19 @@ const MAX_SIZE = 2 * 1024 * 1024;
 interface AvatarUploadProps {
   profile: any;
   mutationHook: () => readonly [(args: any) => any, { isLoading: boolean }];
+  removeHook: () => readonly [() => any, { isLoading: boolean }];
 }
 
-function AvatarUpload({ profile, mutationHook }: AvatarUploadProps) {
+function AvatarUpload({
+  profile,
+  mutationHook,
+  removeHook,
+}: AvatarUploadProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const [isRemoved, setIsRemoved] = useState(false);
 
-  const [updateProfile, { isLoading }] = mutationHook();
+  const [updateProfile, { isLoading: isUploading }] = mutationHook();
+  const [removePicture, { isLoading: isRemoving }] = removeHook();
 
   useEffect(() => {
     if (profile?.picture) {
@@ -64,7 +70,7 @@ function AvatarUpload({ profile, mutationHook }: AvatarUploadProps) {
   const handleDelete = async () => {
     setIsRemoved(true);
     try {
-      await updateProfile({ picture: "" }).unwrap();
+      await removePicture().unwrap();
       toast.success("Profile picture has been delete successfully");
     } catch {
       toast.error("Failed to delete profile picture");
@@ -76,7 +82,7 @@ function AvatarUpload({ profile, mutationHook }: AvatarUploadProps) {
 
   return (
     <div className="space-y-3">
-      {isLoading ? (
+      {isUploading || isRemoving ? (
         <SectionLoader />
       ) : (
         <Avatar className="h-32 w-32 mx-auto">

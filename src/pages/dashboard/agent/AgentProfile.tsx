@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   useChangeAgentPasswordMutation,
   useGetAgentProfileQuery,
+  useRemoveAgentPictureMutation,
   useUpdateAgentProfileMutation,
-} from "@/redux/features/agent  api/agent.api";
+} from "@/redux/features/agent-api/agent.api";
 import { motion } from "framer-motion";
 import AvatarUpload from "../../../components/common/AvatarUpload";
 import ChangePasswordDialog from "../../../components/common/ChangePasswordDialog";
@@ -47,6 +48,7 @@ function AgentProfile() {
               <AvatarUpload
                 profile={profile}
                 mutationHook={useUpdateAgentProfileMutation}
+                removeHook={useRemoveAgentPictureMutation}
               />
               <ProfileCompletion profile={profile} />
             </div>

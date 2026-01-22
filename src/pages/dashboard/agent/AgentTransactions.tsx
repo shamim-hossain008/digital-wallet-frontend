@@ -2,7 +2,7 @@ import { GlobalSkeleton } from "@/components/loading/GlobalSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useGetAgentTransactionsQuery } from "@/redux/features/agent  api/agent.api";
+import { useGetAgentTransactionsQuery } from "@/redux/features/agent-api/agent.api";
 import type { AgentTransaction, FilterType } from "@/types";
 import { exportTransactionsCSV } from "@/utils/exportTransactionsCSV";
 import { motion } from "framer-motion";
@@ -21,11 +21,8 @@ function AgentTransactions() {
     search,
   });
 
-  
-
-   const transactions: AgentTransaction[] = data?.data?.data ?? [];
-   const meta = data?.data?.meta;
-  
+  const transactions: AgentTransaction[] = data?.data?.data ?? [];
+  const meta = data?.data?.meta;
 
   if (isLoading) return <GlobalSkeleton />;
 

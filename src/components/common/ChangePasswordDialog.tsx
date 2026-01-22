@@ -9,13 +9,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { DialogDescription } from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { toast } from "sonner";
 
 interface ChangePasswordDialogProps {
   mutationHook: () => readonly [
     (args: { oldPassword: string; newPassword: string }) => any,
-    { isLoading: boolean }
+    { isLoading: boolean },
   ];
 }
 
@@ -45,7 +46,11 @@ function ChangePasswordDialog({ mutationHook }: ChangePasswordDialogProps) {
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Change Password</DialogTitle>
+          <DialogTitle>Change Your Password</DialogTitle>
+          <DialogDescription>
+            Secure your account by changing your password. Make sure your new
+            password is strong.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3">

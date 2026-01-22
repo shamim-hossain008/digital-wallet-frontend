@@ -2,7 +2,7 @@ import { GlobalSkeleton } from "@/components/loading/GlobalSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SummaryCard } from "@/pages/public/card/SummaryCard";
-import { useGetAgentDashboardQuery } from "@/redux/features/agent  api/agent.api";
+import { useGetAgentDashboardQuery } from "@/redux/features/agent-api/agent.api";
 import type { FilterType } from "@/types";
 import { exportTransactionsCSV } from "@/utils/exportTransactionsCSV";
 import { formatAmount, getTransactionMeta } from "@/utils/transactionHelpers";
@@ -40,7 +40,6 @@ function AgentDashboard() {
   const transactions = dashboard?.recentTransactions?.data ?? [];
   const meta = dashboard?.recentTransactions?.meta;
 
- 
   const isLowBalance = dashboard?.walletBalance === 0;
 
   useEffect(() => {

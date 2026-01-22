@@ -30,9 +30,6 @@ function AgentManagement() {
   const agents = data?.data ?? [];
   const meta = data?.meta;
 
-  console.log("agent data:", agents);
-  console.log("meta data:", meta);
-
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Agent Management</h1>

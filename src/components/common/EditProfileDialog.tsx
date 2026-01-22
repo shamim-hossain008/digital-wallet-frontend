@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 
 import type { IUserInfoData } from "@/types";
+import { DialogDescription } from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
 import PhoneInput from "react-phone-number-input";
 import { toast } from "sonner";
@@ -59,6 +60,9 @@ function EditProfileDialog({ profile, mutationHook }: EditProfileDialogProps) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Profile</DialogTitle>
+            <DialogDescription>
+              Update your name and phone number below.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">

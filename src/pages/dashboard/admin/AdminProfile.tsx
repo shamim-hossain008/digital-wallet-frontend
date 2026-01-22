@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   useChangeAdminPasswordMutation,
   useGetAdminProfileQuery,
+  useRemoveAdminPictureMutation,
   useUpdateAdminProfileMutation,
 } from "@/redux/features/Admin-api/admin.api";
 import { motion } from "framer-motion";
@@ -44,6 +45,7 @@ function AdminProfile() {
               <AvatarUpload
                 profile={admin}
                 mutationHook={useUpdateAdminProfileMutation}
+                removeHook={useRemoveAdminPictureMutation}
               />
               <ProfileCompletion profile={admin} />
             </div>
