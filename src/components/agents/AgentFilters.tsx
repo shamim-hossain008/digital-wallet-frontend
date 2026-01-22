@@ -23,9 +23,9 @@ function AgentFilters({ search, setSearch, status, setStatus }: Props) {
         onChange={(e) => setStatus(e.target.value as AdminAgentStatus)}
       >
         <option value="">All</option>
-        <option value="active">Active</option>
-        <option value="pending">Pending</option>
-        <option value="block">Blocked</option>
+        <option value="ACTIVE">Active</option>
+        <option value="INACTIVE">Pending</option>
+        <option value="BLOCKED">Blocked</option>
       </select>
     </div>
   );

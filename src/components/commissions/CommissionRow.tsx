@@ -31,7 +31,6 @@ function CommissionRow({ commission, onPay }: Props) {
         <CommissionStatusBadge isPaid={isPaid} />
       </td>
 
-
       {/* Action */}
       <td className="p-3 text-right">
         {onPay && (

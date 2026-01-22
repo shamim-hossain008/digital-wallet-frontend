@@ -61,7 +61,7 @@ function UserDashboard() {
       <h1 className="text-2xl font-bold">User Dashboard</h1>
 
       {/* Wallet Card */}
-      <Card className="bg-primary text-primary-foreground shadow-xl border-0 rounded-2xl">
+      <Card className="bg-primary text-primary-foreground shadow-xl border border-blue-500 rounded-2xl">
         <CardHeader className="flex justify-between items-center">
           <div>
             <p className="text-sm opacity-90">Current Wallet Balance</p>

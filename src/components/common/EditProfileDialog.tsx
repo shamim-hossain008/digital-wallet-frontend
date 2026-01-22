@@ -10,24 +10,24 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 
-import { useUpdateAgentProfileMutation } from "@/redux/features/agent  api/agent.api";
 import type { IUserInfoData } from "@/types";
 import { useEffect, useState } from "react";
 import PhoneInput from "react-phone-number-input";
 import { toast } from "sonner";
 
-export interface IProps {
+interface EditProfileDialogProps {
   profile: IUserInfoData;
+  mutationHook: () => readonly [(args: any) => any, { isLoading: boolean }];
 }
 
-function EditProfileDialog({ profile }: IProps) {
+function EditProfileDialog({ profile, mutationHook }: EditProfileDialogProps) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(profile.name);
   const [phone, setPhone] = useState<string | undefined>(
     profile.phone || undefined
   );
 
-  const [updateProfile, { isLoading }] = useUpdateAgentProfileMutation();
+  const [updateProfile, { isLoading }] = mutationHook();
 
   // keep dialog values in sync when profile updates
   useEffect(() => {

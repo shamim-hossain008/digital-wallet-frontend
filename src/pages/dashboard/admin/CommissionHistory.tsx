@@ -12,8 +12,6 @@ function CommissionHistory() {
     limit: 10,
   });
 
-  console.log("CommissionHistory:", data);
-
   if (isLoading) return <GlobalSkeleton />;
 
   const records = data?.data?.data ?? [];

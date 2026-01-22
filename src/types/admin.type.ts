@@ -9,4 +9,4 @@ export type AdminDashboardStats = {
 };
 
 export type AdminUserStatus = "active" | "blocked";
-export type AdminAgentStatus = "active" | "blocked" | "pending";
+export type AdminAgentStatus = "ACTIVE" | "INACTIVE" | "BLOCKED";

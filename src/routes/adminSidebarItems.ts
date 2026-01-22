@@ -21,6 +21,7 @@ const CommissionHistory = lazy(
 const AllTransactions = lazy(
   () => import("@/pages/dashboard/admin/AllTransactions")
 );
+const AdminProfile = lazy(() => import("@/pages/dashboard/admin/AdminProfile"));
 
 export const adminSidebarItems: ISidebarItem[] = [
   {
@@ -68,6 +69,16 @@ export const adminSidebarItems: ISidebarItem[] = [
         title: "All Transactions",
         url: "/admin/all-transactions",
         component: AllTransactions,
+      },
+    ],
+  },
+  {
+    title: "Settings",
+    items: [
+      {
+        title: "Profile",
+        url: "/admin/profile",
+        component: AdminProfile,
       },
     ],
   },

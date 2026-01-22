@@ -52,13 +52,13 @@ export const adminApi = baseApi.injectEndpoints({
     }),
 
     toggleUserBlock: builder.mutation<
-      IResponse<null>,
-      { userId: string; isBlocked: boolean }
+      IResponse<any>,
+      { userId: string; isActive: "ACTIVE" | "INACTIVE" }
     >({
-      query: ({ userId, isBlocked }) => ({
+      query: ({ userId, isActive }) => ({
         url: `/admin/users/${userId}/block`,
         method: "PATCH",
-        data: { isBlocked },
+        data: { isActive },
       }),
       invalidatesTags: ["User"],
     }),
@@ -84,20 +84,16 @@ export const adminApi = baseApi.injectEndpoints({
 
     approveAgent: builder.mutation<IResponse<null>, { agentId: string }>({
       query: ({ agentId }) => ({
-        url: `/admin/agents/${agentId}/approve`,
+        url: `/auth/approve/${agentId}`,
         method: "PATCH",
       }),
       invalidatesTags: ["Agent"],
     }),
 
-    suspendAgent: builder.mutation<
-      IResponse<null>,
-      { agentId: string; isBlocked: boolean }
-    >({
-      query: ({ agentId, isBlocked }) => ({
-        url: `/admin/agents/${agentId}/suspend`,
+    suspendAgent: builder.mutation<IResponse<null>, { agentId: string }>({
+      query: ({ agentId }) => ({
+        url: `/auth/suspend/${agentId}`,
         method: "PATCH",
-        data: { isBlocked },
       }),
       invalidatesTags: ["Agent"],
     }),
@@ -144,16 +140,32 @@ export const adminApi = baseApi.injectEndpoints({
       providesTags: ["Admin"],
     }),
 
-    updateAdminProfile: builder.mutation<
-      IResponse<IUserInfoData>,
-      Partial<{ name: string; phone: string; picture: string }>
+    updateAdminProfile: builder.mutation<IResponse<IUserInfoData>, FormData>({
+      query: (formData) => ({
+        url: "/admin/profile",
+        method: "PATCH",
+        data: formData,
+      }),
+      invalidatesTags: ["Admin"],
+    }),
+
+    removeAdminPicture: builder.mutation<IResponse<any>, void>({
+      query: () => ({
+        url: "/admin/profile/picture",
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Admin"],
+    }),
+
+    changeAdminPassword: builder.mutation<
+      IResponse<null>,
+      { oldPassword: string; newPassword: string }
     >({
       query: (data) => ({
-        url: "/admin/profile",
+        url: "/admin/profile/change-password",
         method: "PATCH",
         data,
       }),
-      invalidatesTags: ["Admin"],
     }),
 
     /* ================= COMMISSION SUMMARY ================= */
@@ -209,6 +221,19 @@ export const adminApi = baseApi.injectEndpoints({
       }),
       providesTags: ["CommissionHistory"],
     }),
+
+    // Updated user role by admin
+    updateUserRole: builder.mutation<
+      IResponse<any>,
+      { userId: string; role: "USER" | "AGENT" }
+    >({
+      query: ({ userId, role }) => ({
+        url: `/admin/users/${userId}/role`,
+        method: "PATCH",
+        data: { role },
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -217,6 +242,7 @@ export const adminApi = baseApi.injectEndpoints({
 export const {
   useGetAdminDashboardQuery,
   useGetAdminSummaryQuery,
+
   useGetAllUsersQuery,
   useToggleUserBlockMutation,
 
@@ -230,9 +256,12 @@ export const {
 
   useGetAdminProfileQuery,
   useUpdateAdminProfileMutation,
+  useRemoveAdminPictureMutation,
+  useChangeAdminPasswordMutation,
 
   useGetAllCommissionsQuery,
   usePayCommissionMutation,
 
   useGetCommissionHistoryQuery,
+  useUpdateUserRoleMutation,
 } = adminApi;

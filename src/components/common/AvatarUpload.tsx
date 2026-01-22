@@ -2,19 +2,24 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useUpdateAgentProfileMutation } from "@/redux/features/agent  api/agent.api";
 import { Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
+import { SectionLoader } from "../loading/SectionLoader";
 
 const MAX_SIZE = 2 * 1024 * 1024;
 
-function AvatarUpload({ profile }: { profile: any }) {
+interface AvatarUploadProps {
+  profile: any;
+  mutationHook: () => readonly [(args: any) => any, { isLoading: boolean }];
+}
+
+function AvatarUpload({ profile, mutationHook }: AvatarUploadProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const [isRemoved, setIsRemoved] = useState(false);
-  const [updateProfile, { isLoading }] = useUpdateAgentProfileMutation();
+
+  const [updateProfile, { isLoading }] = mutationHook();
 
   useEffect(() => {
     if (profile?.picture) {
@@ -37,18 +42,17 @@ function AvatarUpload({ profile }: { profile: any }) {
       setIsRemoved(false);
 
       const formData = new FormData();
-      formData.append("photo", file);
+      formData.append("picture", file);
 
       try {
         await updateProfile(formData).unwrap();
         toast.success("Profile  updated");
-        setPreview(null);
       } catch (err: any) {
         toast.error(err?.data?.message || "Upload failed");
         setPreview(null);
       }
     },
-    [updateProfile]
+    [updateProfile],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -73,7 +77,7 @@ function AvatarUpload({ profile }: { profile: any }) {
   return (
     <div className="space-y-3">
       {isLoading ? (
-        <Skeleton className="h-32 w-32 rounded-full" />
+        <SectionLoader />
       ) : (
         <Avatar className="h-32 w-32 mx-auto">
           <AvatarImage src={avatarSrc} />

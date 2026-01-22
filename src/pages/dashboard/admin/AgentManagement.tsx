@@ -22,8 +22,6 @@ function AgentManagement() {
     status: status === "" ? undefined : status,
   });
 
-  console.log("All agent data", data);
-
   const [approveAgent] = useApproveAgentMutation();
   const [suspendAgent] = useSuspendAgentMutation();
 
@@ -63,12 +61,7 @@ function AgentManagement() {
                 key={agent._id}
                 agent={agent}
                 onApprove={() => approveAgent({ agentId: agent._id })}
-                onSuspend={() =>
-                  suspendAgent({
-                    agentId: agent._id,
-                    isBlocked: true,
-                  })
-                }
+                onSuspend={() => suspendAgent({ agentId: agent._id })}
               />
             ))}
           </tbody>

@@ -9,16 +9,22 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { useChangeAgentPasswordMutation } from "@/redux/features/agent  api/agent.api";
 import { useState } from "react";
 import { toast } from "sonner";
 
-function ChangePasswordDialog() {
+interface ChangePasswordDialogProps {
+  mutationHook: () => readonly [
+    (args: { oldPassword: string; newPassword: string }) => any,
+    { isLoading: boolean }
+  ];
+}
+
+function ChangePasswordDialog({ mutationHook }: ChangePasswordDialogProps) {
   const [open, setOpen] = useState(false);
   const [oldPassword, setOld] = useState("");
   const [newPassword, setNew] = useState("");
 
-  const [changePassword, { isLoading }] = useChangeAgentPasswordMutation();
+  const [changePassword, { isLoading }] = mutationHook();
 
   const handleSubmit = async () => {
     try {
