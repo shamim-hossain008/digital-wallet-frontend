@@ -2,7 +2,6 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { role } from "@/constants/role";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
-import ProfileManagement from "@/pages/dashboard/user/ProfileManagement";
 import Unauthorized from "@/pages/Unauthorized";
 import type { TRole } from "@/types";
 import { generateRoutes } from "@/utils/generateRoutes";
@@ -73,10 +72,10 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="/user/dashboard" /> },
       ...generateRoutes(userSidebarItems),
 
-      {
-        path: "profile/edit",
-        element: <ProfileManagement />,
-      },
+      // {
+      //   path: "profile/edit",
+      //   element: <ProfileManagement />,
+      // },
     ],
   },
   {

@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { useCashOutMutation } from "@/redux/features/agent-api/agent.api";
+import { Description } from "@radix-ui/react-dialog";
 
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -86,8 +87,8 @@ function WithdrawMoney() {
 
           {/* Preview */}
           <div className="text-sm space-y-1 text-muted-foreground">
-            <p>Commission (0.5%): {commission.toFixed(2)}</p>
-            <p>Total deduction: {totalDeduction.toFixed(2)}</p>
+            <p>Commission $ (0.5%): {commission.toFixed(2)}</p>
+            <p>Total deduction: $ {totalDeduction.toFixed(2)}</p>
           </div>
 
           <Button
@@ -105,10 +106,17 @@ function WithdrawMoney() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Cash-Out</DialogTitle>
+            <Description>
+              Are you sure you want to proceed with this cash‑out?
+            </Description>
           </DialogHeader>
 
           <p className="text-sm">
-            Withdraw <strong>{amount}</strong> from user?
+            Withdraw{" "}
+            <strong className="text-xl text-red-400">
+              ${amount.toFixed(2)}
+            </strong>{" "}
+            from user?
           </p>
 
           <div className="flex justify-end gap-2">

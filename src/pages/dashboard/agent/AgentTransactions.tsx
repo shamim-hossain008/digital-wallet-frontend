@@ -1,3 +1,4 @@
+import Pagination from "@/components/common/Pagination";
 import { GlobalSkeleton } from "@/components/loading/GlobalSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -136,25 +137,13 @@ function AgentTransactions() {
 
           {/* Pagination */}
           {meta && (
-            <div className="flex justify-between items-center pt-4">
-              <Button
-                disabled={page === 1}
-                onClick={() => setPage((p) => p - 1)}
-              >
-                Previous
-              </Button>
-
-              <span className="text-sm text-muted-foreground">
-                Page {meta.page} of {meta.totalPages}
-              </span>
-
-              <Button
-                disabled={page === meta.totalPages}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                Next
-              </Button>
-            </div>
+            <Pagination
+              page={page}
+              limit={meta.limit}
+              total={meta.total}
+              onPrev={() => setPage((p) => p - 1)}
+              onNext={() => setPage((p) => p + 1)}
+            />
           )}
         </CardContent>
       </Card>

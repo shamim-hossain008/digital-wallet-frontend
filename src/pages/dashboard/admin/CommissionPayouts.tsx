@@ -99,7 +99,7 @@ function CommissionPayouts() {
         />
       )}
 
-      {/* ✅ Confirmation Modal */}
+      {/*  Confirmation Modal */}
       <ConfirmCommissionModal
         open={!!selectedCommission}
         agentName={selectedCommission?.name}

@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Pagination } from "@/components/ui/pagination";
+
 import {
   Select,
   SelectContent,
@@ -43,7 +43,7 @@ function MyTransactions() {
   const userId = userData?.data?._id;
 
   const transactions = data?.data?.transactions ?? [];
-  const totalPages = data?.data?.totalPages ?? 1;
+  // const totalPages = data?.data?.totalPages ?? 1;
 
   // CSV Export
   const exportCSV = () => {
@@ -178,7 +178,7 @@ function MyTransactions() {
                   {transactions.map((tx: any) => {
                     const direction = getTransactionDirection(
                       tx,
-                      userId as string
+                      userId as string,
                     );
                     const isCredit = direction === "credit";
 
@@ -244,13 +244,13 @@ function MyTransactions() {
           )}
 
           {/* Pagination */}
-          {transactions.length > 0 && (
+          {/* {transactions.length > 0 && (
             <Pagination
-              currentPage={page}
-              totalPages={totalPages}
+              page={page}
+              limit={limit}
               onPageChange={setPage}
             />
-          )}
+          )} */}
         </CardContent>
       </Card>
     </div>

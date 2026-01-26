@@ -1,6 +1,8 @@
+import Pagination from "@/components/common/Pagination";
 import { GlobalSkeleton } from "@/components/loading/GlobalSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { SummaryCard } from "@/pages/public/card/SummaryCard";
 import { useGetAgentDashboardQuery } from "@/redux/features/agent-api/agent.api";
 import type { FilterType } from "@/types";
@@ -18,6 +20,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
 function AgentDashboard() {
   const [filter, setFilter] = useState<FilterType>("all");
   const [page, setPage] = useState(1);
@@ -71,7 +74,7 @@ function AgentDashboard() {
       )}
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 ">
         <SummaryCard
           title="Wallet Balance"
           amount={dashboard.walletBalance}
@@ -84,6 +87,7 @@ function AgentDashboard() {
           title="Total Cash In"
           amount={dashboard.totalCashIns}
           loading={isLoading}
+          highlight
           icon={<ArrowDownLeft className="text-green-500" />}
         />
 
@@ -91,6 +95,7 @@ function AgentDashboard() {
           title="Total Cash Out"
           amount={dashboard.totalCashOuts}
           loading={isLoading}
+          highlight
           icon={<ArrowUpRight className="text-red-500" />}
         />
 
@@ -98,6 +103,7 @@ function AgentDashboard() {
           title="Commission Earned"
           amount={dashboard.commissionEarned}
           loading={isLoading}
+          highlight
           icon={<Wallet className="text-indigo-500" />}
         />
       </div>
@@ -144,18 +150,18 @@ function AgentDashboard() {
           )}
 
           {transactions.map((tx) => {
-            const meta = getTransactionMeta(tx.type);
-            const Icon = meta.icon;
+            const metaTx = getTransactionMeta(tx.type);
+            const Icon = metaTx.icon;
 
             return (
               <div
                 key={tx._id}
-                className="flex items-center justify-between rounded-md border px-3 py-2"
+                className="flex items-center justify-between rounded-md border px-4 py-4 transition-transform duration-200 hover:-translate-1.5 hover:shadow-md"
               >
                 <div className="flex items-center gap-3">
-                  <Icon className={meta.color} size={18} />
+                  <Icon className={metaTx.color} size={18} />
                   <div>
-                    <p className="text-sm font-medium">{meta.label}</p>
+                    <p className="text-xl font-medium">{metaTx.label}</p>
                     <p className="text-xs text-muted-foreground">
                       {new Date(tx.timestamp).toLocaleString()}
                     </p>
@@ -163,7 +169,7 @@ function AgentDashboard() {
                 </div>
 
                 <div className="text-right">
-                  <p className={`font-semibold ${meta.color}`}>
+                  <p className={`font-semibold ${metaTx.color}`}>
                     $ {formatAmount(tx.amount)}
                   </p>
 
@@ -178,30 +184,14 @@ function AgentDashboard() {
           })}
 
           {/* Pagination */}
-          {meta && meta.totalPages > 1 && (
-            <div className="flex items-center justify-between pt-4">
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={page === 1}
-                onClick={() => setPage((p) => p - 1)}
-              >
-                Previous
-              </Button>
-
-              <span className="text-sm text-muted-foreground">
-                Page {meta.page} of {meta.totalPages}
-              </span>
-
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={page >= meta.totalPages}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                Next
-              </Button>
-            </div>
+          {meta &&  (
+            <Pagination
+              page={page}
+              limit={meta.limit}
+              total={meta.total}
+              onPrev={() => setPage((p) => p - 1)}
+              onNext={() => setPage((p) => p + 1)}
+            />
           )}
         </CardContent>
       </Card>

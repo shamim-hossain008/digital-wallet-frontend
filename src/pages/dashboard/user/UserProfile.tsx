@@ -1,85 +1,88 @@
+import AvatarUpload from "@/components/common/AvatarUpload";
+import ChangePasswordDialog from "@/components/common/ChangePasswordDialog";
+import EditProfileDialog from "@/components/common/EditProfileDialog";
+import ProfileCompletion from "@/components/common/ProfileCompletion";
 import { GlobalSkeleton } from "@/components/loading/GlobalSkeleton";
-import { SectionLoader } from "@/components/loading/SectionLoader";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
 import AccountStatusBadge from "@/pages/public/AccountStatusBadge";
 import InfoRow from "@/pages/public/InfoRow";
-import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
+import {
+  useRemoveUserPictureMutation,
+  useUpdatedUserPasswordMutation,
+  useUpdateUserAvatarMutation,
+  useUpdateUserProfileMutation,
+  useUserInfoQuery,
+} from "@/redux/features/auth/auth.api";
 import { motion } from "framer-motion";
-import { User } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 function UserProfile() {
-  const { data, isLoading, isFetching } = useUserInfoQuery();
-  const navigate = useNavigate();
+  const { data, isLoading } = useUserInfoQuery();
 
-  if (isLoading) {
-    return <GlobalSkeleton />;
+  if (isLoading) return <GlobalSkeleton />;
+
+  const profile = data?.data;
+
+  if (!profile) {
+    return (
+      <p className="text-center text-sm text-muted-foreground">
+        Profile data not available
+      </p>
+    );
   }
 
-  const user = data?.data;
-
   return (
-    <div className="p-4 sm:p-6">
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        className="max-w-md mx-auto"
-      >
-        <Card className="shadow-lg">
-          <CardHeader className="text-center">
-            <CardTitle>Profile</CardTitle>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+    >
+      <div className="max-w-5xl mx-auto p-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>My Profile</CardTitle>
           </CardHeader>
 
-          <CardContent className="space-y-6">
-            {/* Avatar */}
-            <div className="flex flex-col items-center gap-3">
-              <Avatar className="h-24 w-24">
-                <AvatarImage src={user?.picture} />
-                <AvatarFallback className="bg-muted">
-                  <User className="h-10 w-10 opacity-60" />
-                </AvatarFallback>
-              </Avatar>
-
-              <div className="text-center">
-                <h2 className="text-lg font-semibold">
-                  {user?.name || "Unnamed User"}
-                </h2>
-                <p className="text-sm text-muted-foreground break-all">
-                  {user?.email}
-                </p>
-              </div>
+          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* LEFT – AVATAR */}
+            <div className="flex flex-col items-center gap-4">
+              <AvatarUpload
+                profile={profile}
+                mutationHook={useUpdateUserAvatarMutation}
+                removeHook={useRemoveUserPictureMutation}
+              />
+              <ProfileCompletion profile={profile} />
             </div>
 
-            {/* Info */}
-            {isFetching ? (
-              <SectionLoader />
-            ) : (
-              <div className="space-y-3 text-sm">
-                <InfoRow label="Role" value={user?.role} />
-                <InfoRow label="Phone" value={user?.phone || "—"} />
-                <InfoRow
-                  label="Account Status"
-                  value={<AccountStatusBadge status={user?.isActive} />}
+            {/* RIGHT – INFO */}
+            <div className="md:col-span-2 space-y-4">
+              <InfoRow label="Name" value={profile.name} />
+              <InfoRow label="Email" value={profile.email} />
+              <InfoRow label="Phone" value={profile.phone ?? "N/A"} />
+              <InfoRow label="Role" value={profile.role} />
+              <InfoRow
+                label="Status"
+                value={
+                  <AccountStatusBadge
+                    status={profile.isActive as "ACTIVE" | "INACTIVE"}
+                  />
+                }
+              />
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-4">
+                <EditProfileDialog
+                  profile={profile}
+                  mutationHook={useUpdateUserProfileMutation}
+                />
+                <ChangePasswordDialog
+                  mutationHook={useUpdatedUserPasswordMutation}
                 />
               </div>
-            )}
-
-            {/* Action */}
-            <Button
-              disabled={isLoading}
-              className="w-full"
-              onClick={() => navigate("/user/profile/edit")}
-            >
-              {isLoading ? <Spinner /> : "Edit Profile"}
-            </Button>
+            </div>
           </CardContent>
         </Card>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   );
 }
 

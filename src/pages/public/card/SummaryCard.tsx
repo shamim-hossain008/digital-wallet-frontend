@@ -24,8 +24,8 @@ export function SummaryCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
     >
-      <Card className={highlight ? "border-primary" : ""}>
-        <CardContent className="flex items-center justify-between p-6">
+      <Card className={highlight ? "border border-blue-500" : ""} >
+        <CardContent className="flex items-center justify-between p-6  ">
           <div>
             <p className="text-sm text-muted-foreground">{title}</p>
             {loading ? (

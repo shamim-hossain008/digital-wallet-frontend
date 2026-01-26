@@ -51,15 +51,43 @@ export const authApi = baseApi.injectEndpoints({
       providesTags: ["User"],
     }),
 
-    // update user profile
-    updateUser: builder.mutation<
-      IResponse<IUserInfoData>,
-      { name: string; phone: string }
-    >({
-      query: (data) => ({
+    // update user profile(accepts FormsData)
+    updateUserProfile: builder.mutation<IResponse<IUserInfoData>, FormData>({
+      query: (formData) => ({
         url: "/user/update-profile",
         method: "PATCH",
-        data,
+        data: formData,
+      }),
+      invalidatesTags: ["User"],
+    }),
+    // Remove user picture
+    removeUserPicture: builder.mutation<IResponse<IUserInfoData>, void>({
+      query: () => ({
+        url: "/user/profile/remove-picture",
+        method: "DELETE",
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+    // updated User Avatar
+    updateUserAvatar: builder.mutation<IResponse<IUserInfoData>, FormData>({
+      query: (formdata) => ({
+        url: "/user/profile/update-picture",
+        method: "PATCH",
+        data: formdata,
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+    // change Password
+    updatedUserPassword: builder.mutation<
+      IResponse<{ message: string }>,
+      { oldPassword: string; newPassword: string }
+    >({
+      query: (payload) => ({
+        url: "/user/update-password",
+        method: "POST",
+        data: payload,
       }),
       invalidatesTags: ["User"],
     }),
@@ -71,5 +99,8 @@ export const {
   useLoginMutation,
   useLogoutMutation,
   useUserInfoQuery,
-  useUpdateUserMutation,
+  useUpdateUserProfileMutation,
+  useUpdateUserAvatarMutation,
+  useRemoveUserPictureMutation,
+  useUpdatedUserPasswordMutation,
 } = authApi;
