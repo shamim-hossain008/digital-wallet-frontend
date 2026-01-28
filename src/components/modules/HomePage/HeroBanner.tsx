@@ -51,7 +51,7 @@ export default function HeroBanner() {
             <Button
               size="lg"
               variant="outline"
-              className="text-white border-white rounded-xl hover:bg-white/20"
+              className="text-accent-foreground bg-white border-white rounded-xl hover:bg-white/20"
               onClick={() => navigate("/features")}
             >
               Learn More

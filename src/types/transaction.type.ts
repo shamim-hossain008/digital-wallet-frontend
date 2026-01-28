@@ -1,7 +1,7 @@
 export interface ITransactionPayLoad {
   amount: number;
   pin?: string;
-  receiver?: string;
+  receiverId?: string;
 }
 
 export interface ITransactionFilter {

@@ -91,6 +91,17 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+    // user lookups user by identifier (email | phone | id )
+    lookupUser: builder.query<
+      IResponse<{ id: string; email?: string; phone?: string; name?: string }>,
+      string
+    >({
+      query: (identifier) => ({
+        url: `/user/lookup?identifier=${encodeURIComponent(identifier)}`,
+        method: "GET",
+      }),
+      providesTags: ["User"],
+    }),
   }),
 });
 
@@ -103,4 +114,6 @@ export const {
   useUpdateUserAvatarMutation,
   useRemoveUserPictureMutation,
   useUpdatedUserPasswordMutation,
+  useLookupUserQuery,
+  useLazyLookupUserQuery
 } = authApi;

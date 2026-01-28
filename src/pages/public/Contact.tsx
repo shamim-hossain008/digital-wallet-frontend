@@ -18,14 +18,18 @@ function Contact() {
     formState: { errors, isSubmitting },
   } = useForm<FormData>();
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     console.log("Submitted Data:", data);
 
-    // Simulated form submission
-    setTimeout(() => {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 700));
+
       toast.success("Your inquiry has been submitted successfully!");
       reset();
-    }, 700);
+    } catch (error) {
+      console.error(error);
+      toast.error("Submission failed");
+    }
   };
 
   return (
@@ -119,19 +123,12 @@ function Contact() {
           {/* Submit Button */}
           <motion.button
             whileTap={{ scale: 0.95 }}
-            className="w-full bg-blue-600 dark:bg-blue-500
-            text-white py-3 rounded-lg font-semibold
-            hover:bg-blue-700 dark:hover:bg-blue-600
-            transition"
+            className="w-full bg-blue-600 dark:bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 dark:hover:bg-blue-600 transition flex items-center justify-center"
             type="submit"
+            disabled={isSubmitting}
+            aria-busy={isSubmitting}
           >
-            {isSubmitting ? (
-              <>
-                <Spinner />
-              </>
-            ) : (
-              "Send Inquiry"
-            )}
+            {isSubmitting ? <Spinner /> : "Send Inquiry"}
           </motion.button>
         </form>
       </motion.div>

@@ -15,8 +15,6 @@ function Deposit() {
   const [deposit, { isLoading }] = useDepositMoneyMutation();
   const navigate = useNavigate();
 
-  
-
   // Auto-focus
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -73,7 +71,6 @@ function Deposit() {
           onClick={handleDeposit}
           className="w-full"
         >
-          {" "}
           {isLoading ? <Spinner className="w-4 h-4" /> : "Deposit"}
         </Button>
         <p className="text-xs text-muted-foreground text-center">

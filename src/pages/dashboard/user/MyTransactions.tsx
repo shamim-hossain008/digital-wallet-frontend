@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import Pagination from "@/components/common/Pagination";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,7 @@ import { useState } from "react";
 
 function MyTransactions() {
   const [page, setPage] = useState(1);
+  const [limit] = useState(10);
   const [typeFilter, setTypeFilter] = useState("");
   const [dateRange, setDateRange] = useState("");
   const [search, setSearch] = useState("");
@@ -32,6 +34,7 @@ function MyTransactions() {
 
   const { data, isLoading } = useGetMyTransactionsQuery({
     page,
+    limit,
     type: typeFilter || undefined,
     range: dateRange || undefined,
     search: search || undefined,
@@ -43,7 +46,9 @@ function MyTransactions() {
   const userId = userData?.data?._id;
 
   const transactions = data?.data?.transactions ?? [];
-  // const totalPages = data?.data?.totalPages ?? 1;
+  const total = data?.data?.total ?? 0;
+  const totalPages =
+    data?.data?.totalPages ?? Math.max(1, Math.ceil(total / limit));
 
   // CSV Export
   const exportCSV = () => {
@@ -69,6 +74,7 @@ function MyTransactions() {
     a.href = url;
     a.download = "transactions.csv";
     a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -244,13 +250,15 @@ function MyTransactions() {
           )}
 
           {/* Pagination */}
-          {/* {transactions.length > 0 && (
+          <div className="pt-4">
             <Pagination
               page={page}
               limit={limit}
-              onPageChange={setPage}
+              total={total}
+              onPrev={() => setPage((p) => Math.max(1, p - 1))}
+              onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
             />
-          )} */}
+          </div>
         </CardContent>
       </Card>
     </div>

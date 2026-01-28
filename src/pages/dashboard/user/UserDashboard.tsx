@@ -13,6 +13,7 @@ import {
   YAxis,
 } from "recharts";
 
+import Pagination from "@/components/common/Pagination";
 import { useCountUp } from "@/hooks/useCountUp";
 import { safeAmount, timeAgo } from "@/utils/formatters";
 import {
@@ -20,7 +21,7 @@ import {
   getTransactionDirection,
 } from "@/utils/transactionHelpers";
 import { ArrowDownLeft, ArrowUpRight, Send } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function UserDashboard() {
@@ -34,6 +35,21 @@ function UserDashboard() {
 
   // animated balance
   const animatedBalance = useCountUp(walletBalance);
+
+  // pagination for recent transactions
+  const [page, setPage] = useState<number>(1);
+  const [limit] = useState<number>(10);
+  const total = recentTransactions.length;
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+
+  useEffect(() => {
+    if (page > totalPages) setPage(1);
+  }, [totalPages, page]);
+
+  const paginatedTransactions = recentTransactions.slice(
+    (page - 1) * limit,
+    page * limit,
+  );
 
   // Detect new transaction
   const prevTxCount = useRef<number>(0);
@@ -161,11 +177,13 @@ function UserDashboard() {
             </p>
           ) : (
             <ul className="space-y-3">
-              {recentTransactions.slice(0, 5).map((tx: any, i: number) => {
+              {paginatedTransactions.map((tx: any, i: number) => {
                 const direction = getTransactionDirection(tx, userId as string);
                 const isCredit = direction === "credit";
+                const globalIndex = (page - 1) * limit + i;
                 const isNew =
-                  i === 0 && recentTransactions.length > prevTxCount.current;
+                  globalIndex === 0 &&
+                  recentTransactions.length > prevTxCount.current;
 
                 return (
                   <li
@@ -218,6 +236,18 @@ function UserDashboard() {
               })}
             </ul>
           )}
+
+          {/* Pagination */}
+
+          <div className="pt-4">
+            <Pagination
+              page={page}
+              limit={limit}
+              total={total}
+              onPrev={() => setPage((p) => Math.max(1, p - 1))}
+              onNext={() => setPage((p) => Math.min(totalPages, p + 1))}
+            />
+          </div>
         </CardContent>
       </Card>
     </div>
